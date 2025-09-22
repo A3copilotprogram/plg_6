@@ -1,6 +1,6 @@
 .DS_Store
 htmlcov
-.env
 *.env
-.env*
 frontend/.*
+config.bat
+node_modules
