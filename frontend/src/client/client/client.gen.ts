@@ -78,6 +78,7 @@ export const createClient = (config: Config = {}): Client => {
       const _axios = opts.axios!;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { auth, ...optsWithoutAuth } = opts;
+      console.log("[opts.baseURL as string,]", opts.baseURL, "[url]", url)
       const response = await _axios({
         ...optsWithoutAuth,
         baseURL: opts.baseURL as string,

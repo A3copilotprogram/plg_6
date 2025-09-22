@@ -1,3 +1,4 @@
+
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
@@ -30,16 +31,13 @@ class Document(DocumentBase, table=True):
     filename: str
     status: DocumentStatus = Field(default=DocumentStatus.PENDING)
 
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column_kwargs={"server_default": text("CURRENT_TIMESTAMP")}
+    )
     uploaded_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         sa_column_kwargs={"server_default": text("CURRENT_TIMESTAMP")}
     )
 
     course: Course | None = Relationship(back_populates="documents")
-
-
-class DocumentPublic(DocumentBase):
-    id: uuid.UUID
-    course_id: uuid.UUID
-    uploaded_at: datetime
-    status: DocumentStatus
