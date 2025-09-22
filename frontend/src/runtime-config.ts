@@ -1,11 +1,10 @@
-import type { CreateClientConfig } from './client/client.gen'
+import type {CreateClientConfig} from './client/client.gen'
 
-export const createClientConfig: CreateClientConfig =(config) => {
+export const createClientConfig: CreateClientConfig = (config) => {
   const isServer = typeof window === 'undefined'
 
-  const baseURL = isServer
-    ? process.env.NEXT_INTERNAL_BACKEND_BASE_URL
-    : process.env.NEXT_PUBLIC_BACKEND_BASE_URL || 'http://localhost:8000'
+  const baseURL =
+    process.env.NEXT_PUBLIC_BACKEND_BASE_URL ?? 'http://localhost:8000'
 
   return {
     ...config,
@@ -15,7 +14,7 @@ export const createClientConfig: CreateClientConfig =(config) => {
     // security scheme configuration (bearer) to set the Authorization header.
     auth: async () => {
       if (isServer) {
-        const { cookies } = await import('next/headers')
+        const {cookies} = await import('next/headers')
         const cookieStore = await cookies()
         return cookieStore.get('access_token')?.value
       }

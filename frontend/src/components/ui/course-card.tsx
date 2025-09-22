@@ -61,8 +61,7 @@ export default function CourseCard({
       <CardContent className='pt-0'>
         <div className='text-sm text-muted-foreground flex items-center gap-2'>
           <Calendar className='size-3' />
-          <span className='text-xs'>Created at</span>
-          <span className='text-foreground'>{createdLabel}</span>
+          <span className='text-xs'>{createdLabel}</span>
         </div>
       </CardContent>
     </Card>
