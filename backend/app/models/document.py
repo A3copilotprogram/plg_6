@@ -6,6 +6,7 @@ from sqlalchemy import text
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.course import Course
+from app.models.embeddings import Chunk
 
 
 class DocumentStatus(str, Enum):
@@ -43,3 +44,4 @@ class Document(DocumentBase, table=True):
     )
 
     course: Course | None = Relationship(back_populates="documents")
+    chunks: list[Chunk] = Relationship(back_populates="document", sa_relationship_kwargs={"cascade": "delete"})

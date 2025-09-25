@@ -1,9 +1,9 @@
 """
 Centralized Pydantic/response schemas for Course and Document to avoid circular imports.
 """
-
 import uuid
 from datetime import datetime
+from enum import StrEnum
 
 from sqlmodel import SQLModel
 
@@ -30,4 +30,25 @@ class CoursePublic(SQLModel):
 
 class CoursesPublic(SQLModel):
     data: list["CoursePublic"]
+    count: int
+
+class DifficultyLevel(StrEnum):
+    # Quiz difficulty levels
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD = "hard"
+    EXPERT = "expert"
+    ALL = "all"
+
+class QuestionChoice(SQLModel):
+    id: str
+    text: str
+
+class QuestionPublic(SQLModel):
+    id: uuid.UUID
+    question_text: str
+    choices: list[QuestionChoice]
+
+class QuestionsPublic(SQLModel):
+    data: list["QuestionPublic"]
     count: int

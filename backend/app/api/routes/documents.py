@@ -20,6 +20,8 @@ from app.api.deps import CurrentUser, SessionDep
 from app.models.common import Message
 from app.models.course import Course
 from app.models.document import Document, DocumentStatus
+from app.models.embeddings import Chunk
+from app.tasks import generate_questions_task
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 index_name = "developer-quickstart-py"
@@ -105,11 +107,156 @@ def store_embeddings(
     index.upsert(vectors)
 
 
+# async def process_pdf_task(file_path: str, document_id: uuid.UUID, session: SessionDep):
+#     """Background task to parse, chunk, embed, and store PDF."""
+#     document = session.get(Document, document_id)
+#     if not document:
+#         return  # Document record not found, nothing to do
+
+#     try:
+#         ensure_index_exists()
+#         index = pc.Index(index_name)
+
+#         document.status = DocumentStatus.PROCESSING
+#         session.add(document)
+#         session.commit()
+
+#         with open(file_path, "rb") as f:
+#             reader = PdfReader(f)
+#             full_text = "\n".join(
+#                 [page.extract_text() for page in reader.pages if page.extract_text()]
+#             )
+
+#         if not full_text.strip():
+#             document.status = DocumentStatus.FAILED
+#             session.add(document)
+#             session.commit()
+#             return
+
+#         chunks = chunk_text(full_text)
+#         embeddings = []
+#         BATCH_SIZE = 50
+#         for i in range(0, len(chunks), BATCH_SIZE):
+#             batch = chunks[i : i + BATCH_SIZE]
+#             embeddings.extend(await embed_chunks(batch))
+#             await asyncio.sleep(0)
+
+#         store_embeddings(
+#             chunks, embeddings, str(document.course_id), str(document.id), index
+#         )
+#         document.updated_at = datetime.now(timezone.utc)
+#         document.status = DocumentStatus.COMPLETED
+#         document.chunk_count = len(chunks)
+#         session.add(document)
+#         session.commit()
+
+#     except Exception as e:
+#         logger.error(f"[process_pdf_task] Error processing document: {e}")
+#         document.status = DocumentStatus.FAILED
+#         session.add(document)
+#         session.commit()
+#     finally:
+#         os.remove(file_path)
+
+
+# async def process_pdf_task(file_path: str, document_id: uuid.UUID, session: SessionDep):
+#     """Background task to parse, chunk, embed, and store PDF."""
+#     document = session.get(Document, document_id)
+#     if not document:
+#         return
+
+#     try:
+#         ensure_index_exists()
+#         index = pc.Index(index_name)
+
+#         document.status = DocumentStatus.PROCESSING
+#         session.add(document)
+#         session.commit()
+
+#         with open(file_path, "rb") as f:
+#             reader = PdfReader(f)
+#             full_text = "\n".join(
+#                 [page.extract_text() for page in reader.pages if page.extract_text()]
+#             )
+
+#         if not full_text.strip():
+#             document.status = DocumentStatus.FAILED
+#             session.add(document)
+#             session.commit()
+#             return
+
+#         chunks = chunk_text(full_text)
+
+#         # --- NEW CODE: Save chunks to the database first ---
+#         chunk_records = []
+#         for chunk in chunks:
+#             # Create a Chunk record, which will auto-generate an 'id'
+#             chunk_record = Chunk(
+#                 document_id=document_id, text_content=chunk, embedding_id=""
+#             )
+#             session.add(chunk_record)
+#             chunk_records.append(chunk_record)
+#         session.commit()
+
+#         # Now that we have the auto-generated IDs, proceed with embedding
+
+#         embeddings = []
+#         BATCH_SIZE = 50
+#         for i in range(0, len(chunks), BATCH_SIZE):
+#             batch = chunks[i : i + BATCH_SIZE]
+#             embeddings.extend(await embed_chunks(batch))
+#             await asyncio.sleep(0)
+
+#         vectors_to_upsert = []
+
+#         # Update the chunk records with the Pinecone embedding IDs
+#         for i, (record, embedding) in enumerate(
+#             zip(chunk_records, embeddings, strict=False)
+#         ):
+#             embedding_uuid = str(uuid.uuid4())
+#             record.embedding_id = embedding_uuid
+
+#             # Here we save the chunk's ID as the Pinecone vector ID
+#             # This is a crucial change to link the two systems
+
+#             vectors_to_upsert.append(
+#                 {
+#                     "id": embedding_uuid,
+#                     "values": embedding,
+#                     "metadata": {
+#                         "document_id": str(document_id),
+#                         "chunk_id": record.id,  # Link to the Chunk table's primary key
+#                         "text": record.text_content,
+#                         "chunk_index": i,
+#                     },
+#                 }
+#             )
+
+#         session.commit()
+
+#         # Finally, upsert the vectors to Pinecone
+#         index = pc.Index(index_name)
+#         index.upsert(vectors=vectors_to_upsert)
+
+#         document.updated_at = datetime.now(timezone.utc)
+#         document.status = DocumentStatus.COMPLETED
+#         document.chunk_count = len(chunks)
+#         session.add(document)
+#         session.commit()
+
+#     except Exception as e:
+#         logger.error(f"[process_pdf_task] Error processing document: {e}")
+#         document.status = DocumentStatus.FAILED
+#         session.add(document)
+#         session.commit()
+#     finally:
+#         os.remove(file_path)
+
 async def process_pdf_task(file_path: str, document_id: uuid.UUID, session: SessionDep):
     """Background task to parse, chunk, embed, and store PDF."""
     document = session.get(Document, document_id)
     if not document:
-        return  # Document record not found, nothing to do
+        return
 
     try:
         ensure_index_exists()
@@ -132,6 +279,20 @@ async def process_pdf_task(file_path: str, document_id: uuid.UUID, session: Sess
             return
 
         chunks = chunk_text(full_text)
+
+        # --- NEW CODE: Save chunks to the database first ---
+        chunk_records = []
+        for chunk in chunks:
+            # Create a Chunk record, which will auto-generate an 'id'
+            chunk_record = Chunk(
+                document_id=document_id, text_content=chunk, embedding_id=""
+            )
+            session.add(chunk_record)
+            chunk_records.append(chunk_record)
+        session.commit()
+
+        # Now that we have the auto-generated IDs, proceed with embedding
+
         embeddings = []
         BATCH_SIZE = 50
         for i in range(0, len(chunks), BATCH_SIZE):
@@ -139,14 +300,44 @@ async def process_pdf_task(file_path: str, document_id: uuid.UUID, session: Sess
             embeddings.extend(await embed_chunks(batch))
             await asyncio.sleep(0)
 
-        store_embeddings(
-            chunks, embeddings, str(document.course_id), str(document.id), index
-        )
+        vectors_to_upsert = []
+
+        # Update the chunk records with the Pinecone embedding IDs
+        for i, (record, embedding) in enumerate(
+            zip(chunk_records, embeddings, strict=False)
+        ):
+            embedding_uuid = str(uuid.uuid4())
+            record.embedding_id = embedding_uuid
+
+            vectors_to_upsert.append(
+                {
+                    "id": embedding_uuid,
+                    "values": embedding,
+                    "metadata": {
+                        "document_id": str(document_id),
+                        "chunk_id": record.id,  # Link to the Chunk table's primary key
+                        "text": record.text_content,
+                        "chunk_index": i,
+                    },
+                }
+            )
+
+        session.commit()
+
+        # Finally, upsert the vectors to Pinecone
+        index = pc.Index(index_name)
+        index.upsert(vectors=vectors_to_upsert)
+
         document.updated_at = datetime.now(timezone.utc)
         document.status = DocumentStatus.COMPLETED
         document.chunk_count = len(chunks)
         session.add(document)
         session.commit()
+
+        # --- NEW CODE: Trigger the question generation task ---
+        # Note: You'll need to pass the session to the background task
+        # to ensure it has a database connection.
+        await generate_questions_task(document_id, session)
 
     except Exception as e:
         logger.error(f"[process_pdf_task] Error processing document: {e}")
@@ -155,7 +346,6 @@ async def process_pdf_task(file_path: str, document_id: uuid.UUID, session: Sess
         session.commit()
     finally:
         os.remove(file_path)
-
 
 async def handle_document_processing(
     file: UploadFile, document_id: uuid.UUID, session: SessionDep
@@ -303,7 +493,7 @@ def delete_document(
     """Delete a document by its ID, ensuring the user has permissions."""
 
     document = session.exec(
-        select(Document).where(Document.id == id).options(selectinload(Document.course)) # type: ignore
+        select(Document).where(Document.id == id).options(selectinload(Document.course))  # type: ignore
     ).first()
 
     if not document:
