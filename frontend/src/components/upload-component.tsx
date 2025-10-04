@@ -59,31 +59,32 @@ export default function UploadComponent({
     <div
       {...getRootProps()}
       className={`
-                border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+                border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors bg-[#4A5568]
                 ${
                   isDragActive
-                    ? 'border-primary bg-primary/5'
-                    : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+                    ? 'border-[#2563EB] bg-[#2563EB]/10'
+                    : 'border-[#4A5568] hover:border-[#60A5FA] hover:bg-[#4A5568]/80'
                 }
               `}
     >
       <input {...getInputProps()} />
-      <Cloud className='mx-auto h-12 w-12 text-muted-foreground mb-4' />
+      <Cloud className='mx-auto h-12 w-12 text-[#A0AEC0] mb-4' />
       <div className='space-y-2'>
-        <p className='text-lg font-medium'>
+        <p className='text-lg font-medium text-white'>
           {isDragActive ? 'Drop files here' : 'Drag and drop files here'}
         </p>
-        <p className='text-sm text-muted-foreground'>PDFs (max. 25MB)</p>
+        <p className='text-sm text-[#A0AEC0]'>PDFs, DOCs (max. 25MB)</p>
         <div className='flex items-center justify-center gap-2 my-3'>
-          <div className='h-px bg-border flex-1' />
-          <span className='text-sm text-muted-foreground'>or</span>
-          <div className='h-px bg-border flex-1' />
+          <div className='h-px bg-[#4A5568] flex-1' />
+          <span className='text-sm text-[#A0AEC0]'>or</span>
+          <div className='h-px bg-[#4A5568] flex-1' />
         </div>
         <Button
           type='button'
           variant='secondary'
           size='sm'
           disabled={isUploading}
+          className='bg-[#2D3748] hover:bg-[#4A5568] text-white border-[#4A5568]'
         >
           {isUploading ? 'Uploading...' : 'Browse Files'}
         </Button>

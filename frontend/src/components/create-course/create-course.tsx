@@ -29,16 +29,16 @@ export function CreateCourse() {
 
   return (
     <>
-      <Card className='w-full'>
-        <div className='pl-6 pr-6'>
+      <Card className='w-full bg-[#2D3748] border-[#4A5568]'>
+        <div className='pl-6 pr-6 pt-6'>
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbPage>Create</BreadcrumbPage>
+                <BreadcrumbPage className='text-[#A0AEC0]'>Create</BreadcrumbPage>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Documents</BreadcrumbPage>
+                <BreadcrumbPage className='text-[#A0AEC0]'>Documents</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -46,8 +46,8 @@ export function CreateCourse() {
         {step === STEPS.CREATE_COURSE ? (
           <>
             <CardHeader>
-              <CardTitle className='text-2xl font-semibold'>
-                Create a new course
+              <CardTitle className='text-2xl font-semibold text-white'>
+                Create a new project
               </CardTitle>
             </CardHeader>
             <CardContent className='space-y-6'>
@@ -57,8 +57,8 @@ export function CreateCourse() {
         ) : (
           <>
             <CardHeader>
-              <CardTitle className='text-2xl font-semibold'>
-                Upload documents
+              <CardTitle className='text-2xl font-semibold text-white'>
+                Upload Documents
               </CardTitle>
             </CardHeader>
             <CardContent className='space-y-6'>
