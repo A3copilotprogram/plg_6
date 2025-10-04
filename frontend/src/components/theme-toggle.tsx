@@ -15,11 +15,11 @@ export function ThemeToggle() {
   useEffect(() => {
     if (mounted) {
       const savedTheme = localStorage.getItem('theme')
-      if (savedTheme) {
+      if (savedTheme && savedTheme !== theme) {
         setTheme(savedTheme)
       }
     }
-  }, [mounted, setTheme])
+  }, [mounted, setTheme, theme])
 
   useEffect(() => {
     if (mounted && theme) {

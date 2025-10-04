@@ -28,9 +28,14 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <body className={`${dmSans.variable} ${dmSansMono.variable} antialiased`}>
-        <ThemeProvider attribute='class' defaultTheme='light' enableSystem>
+        <ThemeProvider 
+          attribute='class' 
+          defaultTheme='light' 
+          enableSystem
+          disableTransitionOnChange
+        >
           <main>{children}</main>
           <Toaster />
         </ThemeProvider>
