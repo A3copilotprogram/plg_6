@@ -1,20 +1,20 @@
-'use server'
+"use server";
 
-import {cookies} from 'next/headers'
-import {redirect} from 'next/navigation'
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-import {IAuthState} from '@/types/auth'
+import { IAuthState } from "@/types/auth";
 import {
   BodyLoginLoginAccessToken,
   LoginService,
   UserPublic,
   UsersService,
-} from '@/client'
-import {get} from '@/utils'
-import {SignUpSchema} from '@/types/form'
-import {IState} from '@/types/common'
-import {mapApiError} from '@/lib/mapApiError'
-import {Result} from '@/lib/result'
+} from "@/client";
+import { get } from "@/utils";
+import { SignUpSchema } from "@/types/form";
+import { IState } from "@/types/common";
+import { mapApiError } from "@/lib/mapApiError";
+import { Result } from "@/lib/result";
 
 /**
  * Authenticates a user using the provided form data.
@@ -29,62 +29,68 @@ import {Result} from '@/lib/result'
  */
 export async function authenticate(
   _prevState: IAuthState | undefined,
-  formData?: FormData,
-): Promise<IAuthState | IState> {
+  formData?: FormData
+): Promise<IAuthState> {
   try {
     const data: BodyLoginLoginAccessToken = {
-      username: formData!.get('email') as string,
-      password: formData!.get('password') as string,
-      grant_type: 'password',
-    }
+      username: formData!.get("email") as string,
+      password: formData!.get("password") as string,
+      grant_type: "password",
+    };
 
     const response = await LoginService.postApiV1LoginAccessToken({
       body: data,
-    })
-    const accessToken = get(response, 'data.access_token')
+    });
+    const accessToken = get(response, "data.access_token");
 
     if (accessToken) {
-      const cookieStore = await cookies()
-      cookieStore.set('access_token', accessToken, {
+      const cookieStore = await cookies();
+      cookieStore.set("access_token", accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict',
-        path: '/',
+        sameSite: "strict",
+        path: "/",
         maxAge: 60 * 60 * 24, // 24 hours
-      })
+      });
     }
+
+    // Return success state before redirect
+    return {
+      ok: true,
+      error: undefined,
+    };
   } catch (error) {
     return {
       ok: false,
       error: mapApiError(error),
-    }
+    };
   }
 
-  redirect('/dashboard')
+  redirect("/dashboard");
 }
 
 export async function logout() {
-  const cookieStore = await cookies()
-  cookieStore.delete('access_token')
-  redirect('/login')
+  const cookieStore = await cookies();
+  cookieStore.delete("access_token");
+  redirect("/login");
 }
 
 export async function register(
-  formData: SignUpSchema,
+  formData: SignUpSchema
 ): Promise<Result<UserPublic>> {
   try {
     const response = await UsersService.postApiV1UsersSignup({
       body: formData,
-    })
+    });
 
     return {
       data: response.data,
       ok: true,
-    }
+    };
   } catch (error) {
     return {
       error: mapApiError(error),
       ok: false,
-    }
+    };
   }
 }

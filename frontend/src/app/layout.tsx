@@ -18,8 +18,8 @@ const dmSansMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Athena',
-  description: 'Study Companion',
+  title: 'StudyBuddy',
+  description: 'Your AI-powered study companion',
 }
 
 export default async function RootLayout({
@@ -29,6 +29,12 @@ export default async function RootLayout({
 }) {
   return (
     <html lang='en'>
+      <head>
+        <link 
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" 
+          rel="stylesheet"
+        />
+      </head>
       <body className={`${dmSans.variable} ${dmSansMono.variable} antialiased`}>
         <ThemeProvider attribute='class' defaultTheme='light' enableSystem>
           <main>{children}</main>
