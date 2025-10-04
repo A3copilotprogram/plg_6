@@ -55,6 +55,7 @@
   --secondary-color: #1a202c;
   --text-primary: #ffffff;
   --text-secondary: #a0aec0;
+  
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
