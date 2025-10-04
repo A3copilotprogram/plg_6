@@ -29,44 +29,42 @@ export function CreateCourse() {
 
   return (
     <>
-      <Card className='w-full bg-[#2D3748] border-[#4A5568]'>
-        <div className='pl-6 pr-6 pt-6'>
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbPage className='text-[#A0AEC0]'>Create</BreadcrumbPage>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className='text-[#A0AEC0]'>Documents</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-        {step === STEPS.CREATE_COURSE ? (
-          <>
-            <CardHeader>
-              <CardTitle className='text-2xl font-semibold text-white'>
-                Create a new project
-              </CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-6'>
-              <CourseForm />
-            </CardContent>
-          </>
-        ) : (
-          <>
-            <CardHeader>
-              <CardTitle className='text-2xl font-semibold text-white'>
-                Upload Documents
-              </CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-6'>
-              {courseId && <UploadDocuments courseId={courseId} />}
-            </CardContent>
-          </>
-        )}
-      </Card>
+      <div className='mb-6'>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage className='text-[#A0AEC0]'>Create</BreadcrumbPage>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className='text-[#A0AEC0]'>Documents</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+      {step === STEPS.CREATE_COURSE ? (
+        <>
+          <div className='mb-8'>
+            <h1 className='text-2xl font-semibold text-white'>
+              Create a new project
+            </h1>
+          </div>
+          <div className='space-y-6'>
+            <CourseForm />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className='mb-8'>
+            <h1 className='text-2xl font-semibold text-white'>
+              Upload Documents
+            </h1>
+          </div>
+          <div className='space-y-6'>
+            {courseId && <UploadDocuments courseId={courseId} />}
+          </div>
+        </>
+      )}
     </>
   )
 }
