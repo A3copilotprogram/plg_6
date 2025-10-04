@@ -48,13 +48,13 @@ export default function Flashcard({courseId,}) {
         <Button
           onClick={() => generateFlashcards()}
           disabled={loading}
-          className={`bg-blue-600 hover:bg-blue-700 text-white ${loading && 'loading'}`}
+          className={`bg-[#2563EB] hover:bg-[#1D4ED8] text-white border-0 ${loading && 'loading'}`}
         >
           {loading ? 'Generating flashcards' : 'Generate Flashcards'}
         </Button>
       </div>
       {cards.length > 0 ? (
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 bg-[#1A202C] min-h-[400px] justify-center">
           <div className="w-[70%] h-40 relative perspective-1000">
             <AnimatePresence>
               <motion.div
@@ -82,7 +82,7 @@ export default function Flashcard({courseId,}) {
                 >
                   {/* Front side */}
                   <div
-                    className="flashcard-q absolute w-full h-full text-lg bg-red-400 text-white rounded-md flex items-center justify-center p-4 text-center font-bold"
+                    className="flashcard-q absolute w-full h-full text-lg bg-gradient-to-br from-orange-400 to-yellow-500 text-white rounded-md flex items-center justify-center p-4 text-center font-bold shadow-lg"
                     style={{backfaceVisibility: "hidden"}}
                   >
                     {cards[index].question}
@@ -90,7 +90,7 @@ export default function Flashcard({courseId,}) {
 
                   {/* Back side */}
                   <div
-                    className="flashcard-a absolute w-full h-full text-lg bg-blue-500 text-white rounded-md flex items-center justify-center p-4 text-center font-bold"
+                    className="flashcard-a absolute w-full h-full text-lg bg-gradient-to-br from-orange-400 to-yellow-500 text-white rounded-md flex items-center justify-center p-4 text-center font-bold shadow-lg"
                     style={{
                       backfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
@@ -105,32 +105,32 @@ export default function Flashcard({courseId,}) {
 
           {/*Pagination*/}
           <div className="flex mt-4">
-            <p>{index + 1} of {cards.length}</p>
+            <p className="text-white">{index + 1} of {cards.length}</p>
           </div>
 
           <div className="flex gap-2 mt-5">
             <button
               onClick={handlePrev}
-              className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+              className="px-4 py-2 bg-[#4A5568] text-white rounded hover:bg-[#5A6578] transition-colors duration-200"
             >
               Previous
             </button>
             <button
               onClick={toggleAnswer}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+              className="px-4 py-2 bg-[#2563EB] text-white rounded hover:bg-[#1D4ED8] transition-colors duration-200"
             >
               {showAnswer ? "Hide Answer" : "Reveal Answer"}
             </button>
             <button
               onClick={handleNext}
-              className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+              className="px-4 py-2 bg-[#4A5568] text-white rounded hover:bg-[#5A6578] transition-colors duration-200"
             >
               Next
             </button>
           </div>
         </div>
       ) : (
-        <div>
+        <div className="text-center text-[#A0AEC0] py-12">
           No flashcards available yet. You can click on generate to create.
         </div>
       )}
