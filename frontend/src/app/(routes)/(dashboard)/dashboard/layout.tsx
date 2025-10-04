@@ -33,14 +33,18 @@ import { getMe } from '@/actions/users'
     }
 
     return (
-      <SidebarProvider>
-        <AppSidebar displayName={displayName} />
-        <SidebarInset>
-          <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
-            <SidebarTrigger className='-ml-1' />
-          </header>
-          {children}
-        </SidebarInset>
-      </SidebarProvider>
+      <div className='min-h-screen bg-[#1A202C]'>
+        <SidebarProvider>
+          <AppSidebar displayName={displayName} />
+          <SidebarInset>
+            <header className='flex h-16 shrink-0 items-center gap-2 border-b border-[#4A5568] px-4 bg-[#2D3748]'>
+              <SidebarTrigger className='-ml-1 text-white hover:text-[#60A5FA] transition-colors duration-200' />
+            </header>
+            <div className='bg-[#1A202C] min-h-[calc(100vh-4rem)]'>
+              {children}
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
+      </div>
     )
   }

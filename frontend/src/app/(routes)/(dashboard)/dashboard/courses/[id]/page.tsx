@@ -32,28 +32,28 @@ export default async function Page(props: {params: Promise<{id: string}>}) {
     <>
       <Tabs
         defaultValue='quiz'
-        className='w-full h-full border-r-[1px] border-slate-700 overflow-y-hidden'
+        className='w-full h-full border-r-[1px] border-[#4A5568] overflow-y-hidden bg-[#1A202C]'
       >
-        <TabsList className='w-full justify-start bg-transparent border-b border-slate-300 rounded-none h-12 p-0'>
+        <TabsList className='w-full justify-start bg-[#2D3748] border-b border-[#4A5568] rounded-none h-12 p-0'>
           <StyledTabList name='quiz' />
           <StyledTabList name='chat' />
           <StyledTabList name='flashcard' />
           <StyledTabList name='podcast' />
         </TabsList>
-        <TabsContent value='quiz' className='p-6'>
+        <TabsContent value='quiz' className='p-6 bg-[#1A202C]'>
           <QuizComponent course={course} />
         </TabsContent>
 
-        <TabsContent value='chat' className='p-6'>
+        <TabsContent value='chat' className='p-6 bg-[#1A202C]'>
           <ChatComponent courseId={id} />
         </TabsContent>
 
-      <TabsContent value='flashcard' className='p-6'>
+      <TabsContent value='flashcard' className='p-6 bg-[#1A202C]'>
         <Flashcard courseId={id}/>
       </TabsContent>
 
-        <TabsContent value='podcast' className='p-6'>
-          <div className='text-center text-slate-400 py-12'>
+        <TabsContent value='podcast' className='p-6 bg-[#1A202C]'>
+          <div className='text-center text-[#A0AEC0] py-12'>
             Podcast content will be displayed here
           </div>
         </TabsContent>
