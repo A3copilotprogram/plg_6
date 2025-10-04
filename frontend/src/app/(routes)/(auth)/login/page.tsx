@@ -2,6 +2,7 @@
 
 import {useActionState, useState} from 'react'
 import Link from 'next/link'
+import {Zap} from 'react-feather'
 
 import {authenticate} from '@/actions/auth'
 import {IAuthState} from '@/types/auth'
@@ -27,18 +28,18 @@ export default function Login() {
   }
 
   return (
-    <div className='min-h-screen bg-[#1A202C] flex flex-col'>
+    <div className='min-h-screen bg-sb-background flex flex-col'>
       {/* Header */}
-      <header className='flex justify-between items-center px-4 sm:px-6 py-4'>
+      <header className='flex justify-between items-center px-4 sm:px-6 py-4 border-b border-sb-border'>
         <div className='flex items-center space-x-2'>
-          <div className='w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center'>
-            <span className='text-white font-bold text-lg'>!</span>
+          <div className='w-8 h-8 bg-sb-primary rounded-lg flex items-center justify-center'>
+            <Zap className='w-4 h-4 text-sb-text-primary' />
           </div>
-          <span className='text-white text-lg sm:text-xl font-semibold'>StudyBuddy</span>
+          <span className='text-sb-text-primary text-lg sm:text-xl font-semibold'>StudyBuddy</span>
         </div>
         <Link 
           href='/signup' 
-          className='bg-[#2D3748] hover:bg-[#4A5568] text-white px-4 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base'
+          className='text-sb-text-primary hover:text-sb-primary-light transition-colors duration-200 text-sm sm:text-base'
         >
           Sign up
         </Link>
@@ -47,28 +48,28 @@ export default function Login() {
       {/* Main Content */}
       <div className='flex-1 flex items-center justify-center px-4 sm:px-6 py-8'>
         <div className='w-full max-w-md'>
-          {/* Login Card */}
-          <div className='bg-[#2D3748] rounded-lg p-6 sm:p-8 shadow-xl'>
-            {/* Title and Subtitle */}
-            <div className='text-center mb-6 sm:mb-8'>
-              <h1 className='text-xl sm:text-2xl font-bold text-white mb-2'>
-                Welcome back
-              </h1>
-              <p className='text-[#A0AEC0] text-sm'>
-                Sign in to continue to your study space.
-              </p>
-            </div>
+          {/* Title and Subtitle - Outside the card */}
+          <div className='text-center mb-8'>
+            <h1 className='text-3xl sm:text-4xl font-bold text-sb-text-primary mb-3'>
+              Welcome back
+            </h1>
+            <p className='text-sb-text-secondary text-base'>
+              Sign in to continue to your study space.
+            </p>
+          </div>
 
+          {/* Login Card */}
+          <div className='bg-sb-surface rounded-lg p-6 sm:p-8 shadow-xl'>
             {/* Form */}
-            <form action={formAction} className='space-y-5'>
+            <form action={formAction} className='space-y-4'>
               {/* Email Field */}
               <div>
-                <label htmlFor='email' className='block text-white text-sm font-medium mb-2'>
+                <label htmlFor='email' className='block text-sb-text-primary text-sm font-medium mb-2'>
                   Email address
                 </label>
                 <div className='relative'>
                   <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                    <svg className='h-5 w-5 text-[#A0AEC0]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <svg className='h-5 w-5 text-sb-text-secondary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207' />
                     </svg>
                   </div>
@@ -78,7 +79,7 @@ export default function Login() {
                     type='email'
                     placeholder='Enter your email'
                     required
-                    className='w-full pl-10 pr-4 py-3 bg-[#4A5568] border-0 rounded-md text-white placeholder-[#A0AEC0] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200'
+                    className='w-full pl-10 pr-4 py-3 bg-sb-surface-hover border-0 rounded-md text-sb-text-primary placeholder-sb-text-secondary focus:outline-none focus:ring-2 focus:ring-sb-primary transition-colors duration-200'
                     onBlur={handleBlur}
                   />
                 </div>
@@ -89,12 +90,12 @@ export default function Login() {
 
               {/* Password Field */}
               <div>
-                <label htmlFor='password' className='block text-white text-sm font-medium mb-2'>
+                <label htmlFor='password' className='block text-sb-text-primary text-sm font-medium mb-2'>
                   Password
                 </label>
                 <div className='relative'>
                   <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                    <svg className='h-5 w-5 text-[#A0AEC0]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <svg className='h-5 w-5 text-sb-text-secondary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
                     </svg>
                   </div>
@@ -104,13 +105,13 @@ export default function Login() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder='Password'
                     required
-                    className='w-full pl-10 pr-12 py-3 bg-[#4A5568] border-0 rounded-md text-white placeholder-[#A0AEC0] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200'
+                    className='w-full pl-10 pr-12 py-3 bg-sb-surface-hover border-0 rounded-md text-sb-text-primary placeholder-sb-text-secondary focus:outline-none focus:ring-2 focus:ring-sb-primary transition-colors duration-200'
                     onBlur={handleBlur}
                   />
                   <button
                     type='button'
                     onClick={() => setShowPassword(!showPassword)}
-                    className='absolute inset-y-0 right-0 pr-3 flex items-center text-[#A0AEC0] hover:text-white transition-colors duration-200'
+                    className='absolute inset-y-0 right-0 pr-3 flex items-center text-sb-text-secondary hover:text-sb-text-primary transition-colors duration-200'
                   >
                     {showPassword ? (
                       <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -141,15 +142,15 @@ export default function Login() {
                     type='checkbox'
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className='h-4 w-4 text-[#2563EB] focus:ring-blue-500 border-gray-300 rounded'
+                    className='h-4 w-4 text-sb-primary focus:ring-sb-primary border-sb-border rounded'
                   />
-                  <label htmlFor='remember-me' className='ml-2 block text-sm text-white'>
+                  <label htmlFor='remember-me' className='ml-2 block text-sm text-sb-text-primary'>
                     Remember me
                   </label>
                 </div>
                 <Link
                   href='/recover-password'
-                  className='text-sm text-[#2563EB] hover:text-[#1D4ED8] transition-colors duration-200'
+                  className='text-sm text-sb-primary hover:text-sb-primary-hover transition-colors duration-200'
                 >
                   Forgot your password?
                 </Link>
@@ -158,7 +159,7 @@ export default function Login() {
               {/* Login Button */}
               <button
                 type='submit'
-                className='w-full py-3 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-[#1E40AF] disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors duration-200 mt-6'
+                className='w-full py-3 px-4 bg-sb-primary hover:bg-sb-primary-hover disabled:bg-sb-primary-hover disabled:cursor-not-allowed text-sb-text-primary font-semibold rounded-md transition-colors duration-200 mt-2'
                 disabled={isPending}
               >
                 {isPending ? 'Logging in...' : 'Login'}
@@ -167,12 +168,12 @@ export default function Login() {
           </div>
 
           {/* Footer Link */}
-          <div className='text-center mt-8'>
-            <p className='text-[#A0AEC0] text-sm'>
+          <div className='text-center mt-6'>
+            <p className='text-sb-text-secondary text-base'>
               Don't have an account?{' '}
               <Link
                 href='/signup'
-                className='text-[#2563EB] hover:text-[#1D4ED8] font-medium transition-colors duration-200'
+                className='text-sb-primary hover:text-sb-primary-hover font-medium transition-colors duration-200'
               >
                 Sign up
               </Link>

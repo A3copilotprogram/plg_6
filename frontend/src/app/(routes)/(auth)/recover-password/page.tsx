@@ -2,6 +2,7 @@
 
 import {useState} from 'react'
 import Link from 'next/link'
+import {Zap} from 'react-feather'
 
 import {emailPattern} from '@/lib/auth'
 
@@ -69,18 +70,18 @@ export default function RecoverPasswordPage() {
 
   if (isSubmitted) {
     return (
-      <div className='min-h-screen bg-[#1A202C] flex flex-col'>
+      <div className='min-h-screen bg-sb-background flex flex-col'>
         {/* Header */}
-        <header className='flex justify-between items-center px-4 sm:px-6 py-4'>
+        <header className='flex justify-between items-center px-4 sm:px-6 py-4 border-b border-sb-border'>
           <div className='flex items-center space-x-2'>
-            <div className='w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center'>
-              <span className='text-white font-bold text-lg'>!</span>
+            <div className='w-8 h-8 bg-sb-primary rounded-lg flex items-center justify-center'>
+              <Zap className='w-4 h-4 text-sb-text-primary' />
             </div>
-            <span className='text-white text-lg sm:text-xl font-semibold'>StudyBuddy</span>
+            <span className='text-sb-text-primary text-lg sm:text-xl font-semibold'>StudyBuddy</span>
           </div>
           <Link 
             href='/login' 
-            className='text-white hover:text-[#60A5FA] transition-colors duration-200 text-sm sm:text-base'
+            className='text-sb-text-primary hover:text-sb-primary-light transition-colors duration-200 text-sm sm:text-base'
           >
             Sign In
           </Link>
@@ -89,11 +90,21 @@ export default function RecoverPasswordPage() {
         {/* Main Content */}
         <div className='flex-1 flex items-center justify-center px-4 sm:px-6 py-8'>
           <div className='w-full max-w-md'>
+            {/* Title and Subtitle - Outside the card */}
+            <div className='text-center mb-8'>
+              <h1 className='text-3xl sm:text-4xl font-bold text-sb-text-primary mb-3'>
+                Check your email
+              </h1>
+              <p className='text-sb-text-secondary text-base'>
+                We&apos;ve sent a password recovery link to your email address.
+              </p>
+            </div>
+
             {/* Success Card */}
-            <div className='bg-[#2D3748] rounded-lg p-6 sm:p-8 shadow-xl text-center'>
-              <div className='mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-green-500/20 mb-6'>
+            <div className='bg-sb-surface rounded-lg p-6 sm:p-8 shadow-xl text-center'>
+              <div className='mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-500/20 mb-6'>
                 <svg
-                  className='h-6 w-6 text-green-400'
+                  className='h-8 w-8 text-green-400'
                   fill='none'
                   viewBox='0 0 24 24'
                   stroke='currentColor'
@@ -106,15 +117,9 @@ export default function RecoverPasswordPage() {
                   />
                 </svg>
               </div>
-              <h2 className='text-xl sm:text-2xl font-bold text-white mb-2'>
-                Check your email
-              </h2>
-              <p className='text-[#A0AEC0] text-sm mb-8'>
-                We&apos;ve sent a password recovery link to your email address.
-              </p>
               <Link
                 href='/login'
-                className='w-full py-3 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold rounded-md transition-colors duration-200 inline-block'
+                className='w-full py-3 px-4 bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary font-semibold rounded-md transition-colors duration-200 inline-block'
               >
                 Back to Sign In
               </Link>
@@ -126,18 +131,18 @@ export default function RecoverPasswordPage() {
   }
 
   return (
-    <div className='min-h-screen bg-[#1A202C] flex flex-col'>
+    <div className='min-h-screen bg-sb-background flex flex-col'>
       {/* Header */}
-      <header className='flex justify-between items-center px-4 sm:px-6 py-4'>
+      <header className='flex justify-between items-center px-4 sm:px-6 py-4 border-b border-sb-border'>
         <div className='flex items-center space-x-2'>
-          <div className='w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center'>
-            <span className='text-white font-bold text-lg'>!</span>
+          <div className='w-8 h-8 bg-sb-primary rounded-lg flex items-center justify-center'>
+            <Zap className='w-4 h-4 text-sb-text-primary' />
           </div>
-          <span className='text-white text-lg sm:text-xl font-semibold'>StudyBuddy</span>
+          <span className='text-sb-text-primary text-lg sm:text-xl font-semibold'>StudyBuddy</span>
         </div>
         <Link 
           href='/login' 
-          className='text-white hover:text-[#60A5FA] transition-colors duration-200 text-sm sm:text-base'
+          className='text-sb-text-primary hover:text-sb-primary-light transition-colors duration-200 text-sm sm:text-base'
         >
           Sign In
         </Link>
@@ -146,28 +151,28 @@ export default function RecoverPasswordPage() {
       {/* Main Content */}
       <div className='flex-1 flex items-center justify-center px-4 sm:px-6 py-8'>
         <div className='w-full max-w-md'>
-          {/* Recovery Card */}
-          <div className='bg-[#2D3748] rounded-lg p-6 sm:p-8 shadow-xl'>
-            {/* Title and Subtitle */}
-            <div className='text-center mb-6 sm:mb-8'>
-              <h1 className='text-xl sm:text-2xl font-bold text-white mb-2'>
-                Password Recovery
-              </h1>
-              <p className='text-[#A0AEC0] text-sm'>
-                A password recovery email will be sent to the registered account.
-              </p>
-            </div>
+          {/* Title and Subtitle - Outside the card */}
+          <div className='text-center mb-8'>
+            <h1 className='text-3xl sm:text-4xl font-bold text-sb-text-primary mb-3'>
+              Password Recovery
+            </h1>
+            <p className='text-sb-text-secondary text-base'>
+              A password recovery email will be sent to the registered account.
+            </p>
+          </div>
 
+          {/* Recovery Card */}
+          <div className='bg-sb-surface rounded-lg p-6 sm:p-8 shadow-xl'>
             {/* Form */}
-            <form onSubmit={handleSubmit} className='space-y-5'>
+            <form onSubmit={handleSubmit} className='space-y-4'>
               {/* Email Field */}
               <div>
-                <label htmlFor='email' className='block text-white text-sm font-medium mb-2'>
+                <label htmlFor='email' className='block text-sb-text-primary text-sm font-medium mb-2'>
                   Email address
                 </label>
                 <div className='relative'>
                   <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                    <svg className='h-5 w-5 text-[#A0AEC0]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <svg className='h-5 w-5 text-sb-text-secondary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207' />
                     </svg>
                   </div>
@@ -180,10 +185,10 @@ export default function RecoverPasswordPage() {
                     value={email}
                     onChange={handleInputChange}
                     onBlur={handleBlur}
-                    className={`w-full pl-10 pr-4 py-3 bg-[#4A5568] border-0 rounded-md text-white placeholder-[#A0AEC0] focus:outline-none focus:ring-2 transition-colors duration-200 ${
+                    className={`w-full pl-10 pr-4 py-3 bg-sb-surface-hover border-0 rounded-md text-sb-text-primary placeholder-sb-text-secondary focus:outline-none focus:ring-2 transition-colors duration-200 ${
                       emailError || error
                         ? 'focus:ring-red-500'
-                        : 'focus:ring-blue-500'
+                        : 'focus:ring-sb-primary'
                     }`}
                   />
                 </div>
@@ -201,7 +206,7 @@ export default function RecoverPasswordPage() {
               {/* Submit Button */}
               <button
                 type='submit'
-                className='w-full py-3 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-[#1E40AF] disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors duration-200 mt-6'
+                className='w-full py-3 px-4 bg-sb-primary hover:bg-sb-primary-hover disabled:bg-sb-primary-hover disabled:cursor-not-allowed text-sb-text-primary font-semibold rounded-md transition-colors duration-200 mt-2'
                 disabled={isLoading}
               >
                 {isLoading ? 'Sending...' : 'Send Recovery Email'}
@@ -210,12 +215,12 @@ export default function RecoverPasswordPage() {
           </div>
 
           {/* Footer Link */}
-          <div className='text-center mt-8'>
-            <p className='text-[#A0AEC0] text-sm'>
+          <div className='text-center mt-6'>
+            <p className='text-sb-text-secondary text-base'>
               Remember your password?{' '}
               <Link
                 href='/login'
-                className='text-[#2563EB] hover:text-[#1D4ED8] font-medium transition-colors duration-200'
+                className='text-sb-primary hover:text-sb-primary-hover font-medium transition-colors duration-200'
               >
                 Sign In
               </Link>

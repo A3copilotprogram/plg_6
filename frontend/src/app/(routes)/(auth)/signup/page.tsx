@@ -5,6 +5,7 @@ import {useForm} from 'react-hook-form'
 import {useRouter} from 'next/navigation'
 import {zodResolver} from '@hookform/resolvers/zod'
 import Link from 'next/link'
+import {Zap} from 'react-feather'
 
 import {IAuthState} from '@/types/auth'
 import {register} from '@/actions/auth'
@@ -60,18 +61,18 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className='min-h-screen bg-[#1A202C] flex flex-col'>
+    <div className='min-h-screen bg-sb-background flex flex-col'>
       {/* Header */}
-      <header className='flex justify-between items-center px-4 sm:px-6 py-4'>
+      <header className='flex justify-between items-center px-4 sm:px-6 py-4 border-b border-sb-border'>
         <div className='flex items-center space-x-2'>
-          <div className='w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center'>
-            <span className='text-white font-bold text-lg'>!</span>
+          <div className='w-8 h-8 bg-sb-primary rounded-lg flex items-center justify-center'>
+            <Zap className='w-4 h-4 text-sb-text-primary' />
           </div>
-          <span className='text-white text-lg sm:text-xl font-semibold'>StudyBuddy</span>
+          <span className='text-sb-text-primary text-lg sm:text-xl font-semibold'>StudyBuddy</span>
         </div>
         <Link 
           href='/login' 
-          className='text-white hover:text-[#60A5FA] transition-colors duration-200 text-sm sm:text-base'
+          className='text-sb-text-primary hover:text-sb-primary-light transition-colors duration-200 text-sm sm:text-base'
         >
           Log In
         </Link>
@@ -80,36 +81,43 @@ export default function SignUpPage() {
       {/* Main Content */}
       <div className='flex-1 flex items-center justify-center px-4 sm:px-6 py-8'>
         <div className='w-full max-w-md'>
-          {/* Sign Up Card */}
-          <div className='bg-[#2D3748] rounded-lg p-6 sm:p-8 shadow-xl'>
-            {/* Title and Subtitle */}
-            <div className='text-center mb-6 sm:mb-8'>
-              <h1 className='text-xl sm:text-2xl font-bold text-white mb-2'>
-                Create your account
-              </h1>
-              <p className='text-[#A0AEC0] text-sm'>
-                Join our community of learners.
-              </p>
-            </div>
+          {/* Title and Subtitle - Outside the card */}
+          <div className='text-center mb-8'>
+            <h1 className='text-3xl sm:text-4xl font-bold text-sb-text-primary mb-3'>
+              Create your account
+            </h1>
+            <p className='text-sb-text-secondary text-base'>
+              Join our community of learners.
+            </p>
+          </div>
 
+          {/* Sign Up Card */}
+          <div className='bg-sb-surface rounded-lg p-6 sm:p-8 shadow-xl'>
             {/* Form */}
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
+              <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
                 {/* Name */}
                 <FormField
                   control={form.control}
                   name='full_name'
                   render={({field}) => (
                     <FormItem>
-                      <FormLabel className='text-white text-sm font-medium'>
+                      <FormLabel className='text-sb-text-primary text-sm font-medium'>
                         Name
                       </FormLabel>
                       <FormControl>
-                        <input
-                          {...field}
-                          placeholder='Enter your name'
-                          className='w-full px-4 py-3 bg-[#4A5568] border-0 rounded-md text-white placeholder-[#A0AEC0] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200'
-                        />
+                        <div className='relative'>
+                          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                            <svg className='h-5 w-5 text-sb-text-secondary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' />
+                            </svg>
+                          </div>
+                          <input
+                            {...field}
+                            placeholder='Enter your name'
+                            className='w-full pl-10 pr-4 py-3 bg-sb-surface-hover border-0 rounded-md text-sb-text-primary placeholder-sb-text-secondary focus:outline-none focus:ring-2 focus:ring-sb-primary transition-colors duration-200'
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -122,16 +130,23 @@ export default function SignUpPage() {
                   name='email'
                   render={({field}) => (
                     <FormItem>
-                      <FormLabel className='text-white text-sm font-medium'>
+                      <FormLabel className='text-sb-text-primary text-sm font-medium'>
                         Email address
                       </FormLabel>
                       <FormControl>
-                        <input
-                          {...field}
-                          type='email'
-                          placeholder='Enter your email'
-                          className='w-full px-4 py-3 bg-[#4A5568] border-0 rounded-md text-white placeholder-[#A0AEC0] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200'
-                        />
+                        <div className='relative'>
+                          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                            <svg className='h-5 w-5 text-sb-text-secondary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207' />
+                            </svg>
+                          </div>
+                          <input
+                            {...field}
+                            type='email'
+                            placeholder='Enter your email'
+                            className='w-full pl-10 pr-4 py-3 bg-sb-surface-hover border-0 rounded-md text-sb-text-primary placeholder-sb-text-secondary focus:outline-none focus:ring-2 focus:ring-sb-primary transition-colors duration-200'
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -144,21 +159,26 @@ export default function SignUpPage() {
                   name='password'
                   render={({field}) => (
                     <FormItem>
-                      <FormLabel className='text-white text-sm font-medium'>
+                      <FormLabel className='text-sb-text-primary text-sm font-medium'>
                         Password
                       </FormLabel>
                       <FormControl>
                         <div className='relative'>
+                          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                            <svg className='h-5 w-5 text-sb-text-secondary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
+                            </svg>
+                          </div>
                           <input
                             {...field}
                             type={showPassword ? 'text' : 'password'}
                             placeholder='Enter your password'
-                            className='w-full px-4 py-3 pr-12 bg-[#4A5568] border-0 rounded-md text-white placeholder-[#A0AEC0] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200'
+                            className='w-full pl-10 pr-12 py-3 bg-sb-surface-hover border-0 rounded-md text-sb-text-primary placeholder-sb-text-secondary focus:outline-none focus:ring-2 focus:ring-sb-primary transition-colors duration-200'
                           />
                           <button
                             type='button'
                             onClick={() => setShowPassword(!showPassword)}
-                            className='absolute inset-y-0 right-0 pr-3 flex items-center text-[#A0AEC0] hover:text-white transition-colors duration-200'
+                            className='absolute inset-y-0 right-0 pr-3 flex items-center text-sb-text-secondary hover:text-sb-text-primary transition-colors duration-200'
                           >
                             {showPassword ? (
                               <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -184,21 +204,26 @@ export default function SignUpPage() {
                   name='confirm_password'
                   render={({field}) => (
                     <FormItem>
-                      <FormLabel className='text-white text-sm font-medium'>
+                      <FormLabel className='text-sb-text-primary text-sm font-medium'>
                         Confirm Password
                       </FormLabel>
                       <FormControl>
                         <div className='relative'>
+                          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                            <svg className='h-5 w-5 text-sb-text-secondary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
+                            </svg>
+                          </div>
                           <input
                             {...field}
                             type={showConfirmPassword ? 'text' : 'password'}
                             placeholder='Confirm your password'
-                            className='w-full px-4 py-3 pr-12 bg-[#4A5568] border-0 rounded-md text-white placeholder-[#A0AEC0] focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200'
+                            className='w-full pl-10 pr-12 py-3 bg-sb-surface-hover border-0 rounded-md text-sb-text-primary placeholder-sb-text-secondary focus:outline-none focus:ring-2 focus:ring-sb-primary transition-colors duration-200'
                           />
                           <button
                             type='button'
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className='absolute inset-y-0 right-0 pr-3 flex items-center text-[#A0AEC0] hover:text-white transition-colors duration-200'
+                            className='absolute inset-y-0 right-0 pr-3 flex items-center text-sb-text-secondary hover:text-sb-text-primary transition-colors duration-200'
                           >
                             {showConfirmPassword ? (
                               <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -226,7 +251,7 @@ export default function SignUpPage() {
                 {/* Submit Button */}
                 <button
                   type='submit'
-                  className='w-full py-3 px-4 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-[#1E40AF] disabled:cursor-not-allowed text-white font-semibold rounded-md transition-colors duration-200 mt-6'
+                  className='w-full py-3 px-4 bg-sb-primary hover:bg-sb-primary-hover disabled:bg-sb-primary-hover disabled:cursor-not-allowed text-sb-text-primary font-semibold rounded-md transition-colors duration-200 mt-2'
                   disabled={isPending}
                 >
                   {isPending ? 'Creating account...' : 'Sign Up'}
@@ -236,12 +261,12 @@ export default function SignUpPage() {
           </div>
 
           {/* Footer Link */}
-          <div className='text-center mt-8'>
-            <p className='text-[#A0AEC0] text-sm'>
+          <div className='text-center mt-6'>
+            <p className='text-sb-text-secondary text-base'>
               Already have an account?{' '}
               <Link
                 href='/login'
-                className='text-[#2563EB] hover:text-[#1D4ED8] font-medium transition-colors duration-200'
+                className='text-sb-primary hover:text-sb-primary-hover font-medium transition-colors duration-200'
               >
                 Log in
               </Link>

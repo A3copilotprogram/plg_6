@@ -43,9 +43,9 @@
   --radius-xl: calc(var(--radius) + 4px);
   
   /* Miro Design Colors */
-  --color-sb-background: #1A202C;
-  --color-sb-surface: #2D3748;
-  --color-sb-surface-hover: #4A5568;
+  --color-sb-background: #101827;
+  --color-sb-surface: #1f2937;
+  --color-sb-surface-hover: #374151;
   --color-sb-surface-active: #5A6578;
   --color-sb-primary: #2563EB;
   --color-sb-primary-hover: #1D4ED8;
