@@ -12,12 +12,15 @@ export default async function CourseLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="h-full">
-      <div className="grid grid-cols-10 h-full">
-        <div className="col-span-7">{children}</div>
-        <div className="col-span-3">
-          <ProjectSettings />
-        </div>
+    <div className="h-full flex">
+      {/* Main Content - right padding for fixed sidebar */}
+      <div className="flex-1 pr-80">
+        {children}
+      </div>
+      
+      {/* Fixed Project Settings Sidebar */}
+      <div className="w-80 bg-sb-background border-l border-sb-border fixed right-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto">
+        <ProjectSettings />
       </div>
     </div>
   )

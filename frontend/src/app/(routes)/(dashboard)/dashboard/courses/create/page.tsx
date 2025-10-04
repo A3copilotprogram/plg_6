@@ -10,15 +10,15 @@ export default function CreateCoursePage() {
 
   return (
     <div className='min-h-screen bg-sb-content flex'>
-      {/* Main Content Area */}
-      <div className='flex-1 p-6'>
+      {/* Main Content Area - right padding to account for fixed sidebar */}
+      <div className='flex-1 p-6 overflow-y-auto pr-80'>
         <div className='max-w-4xl mx-auto'>
           <CreateCourseForm />
         </div>
       </div>
 
-      {/* Right Sidebar - Project Settings */}
-      <div className='w-80 bg-sb-background border-l border-sb-border'>
+      {/* Right Sidebar - Project Settings - Fixed */}
+      <div className='w-80 bg-sb-background border-l border-sb-border fixed right-0 top-16 h-[calc(100vh-4rem)] overflow-y-auto'>
         {selectedProjectId ? (
           <ProjectSettings />
         ) : (

@@ -1,7 +1,7 @@
 .DS_Store
 htmlcov
-.env
 *.env
-.env*
 /.idea/
 frontend/.*
+config.bat
+node_modules
