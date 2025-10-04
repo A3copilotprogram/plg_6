@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 
-import { Home, Plus, File } from 'react-feather'
+import { Home, Plus, File, Zap } from 'react-feather'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -61,7 +61,7 @@ export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
               <Link href='/dashboard'>
                 <div className='flex items-center'>
                   <div className='bg-sb-primary text-sb-text-primary flex aspect-square size-8 items-center justify-center rounded-lg mr-4'>
-                    <span className='text-sb-text-primary font-bold text-sm'>S</span>
+                    <Zap className='size-4' />
                   </div>
                   <div className='flex flex-col gap-0.5 leading-none'>
                     <span className='font-medium text-sb-text-primary'>StudyBuddy</span>

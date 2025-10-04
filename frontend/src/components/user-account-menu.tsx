@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { logout } from '@/actions/auth'
-import { ThemeToggle } from './theme-toggle'
+// import { ThemeToggle } from './theme-toggle'
 
 export function UserAccountMenu({ displayName = 'User' }: { displayName?: string }) {
   return (
@@ -39,9 +39,9 @@ export function UserAccountMenu({ displayName = 'User' }: { displayName?: string
             <span className="text-sb-text-primary">Account Settings</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        {/* <DropdownMenuItem asChild>
           <ThemeToggle />
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem asChild>
           <form action={logout} className="w-full">
             <button
