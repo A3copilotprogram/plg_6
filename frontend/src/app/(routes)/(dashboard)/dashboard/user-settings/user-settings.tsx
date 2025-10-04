@@ -39,20 +39,20 @@ export default function UserSettingsClient() {
   }, [])
 
   return (
-    <div className='flex flex-col gap-6 bg-[#1A202C] min-h-screen p-6'>
-      <h1 className='text-2xl font-semibold text-white'>User Settings</h1>
+    <div className='flex flex-col gap-6 bg-sb-background min-h-screen p-6'>
+      <h1 className='text-2xl font-semibold text-sb-text-primary'>User Settings</h1>
 
       <Tabs defaultValue='profile' className='w-full'>
-        <TabsList className='bg-[#2D3748] border border-[#4A5568]'>
+        <TabsList className='bg-sb-surface border border-sb-border'>
           <TabsTrigger 
             value='profile'
-            className='data-[state=active]:bg-[#4A5568] data-[state=active]:text-white text-[#A0AEC0] hover:text-white'
+            className='data-[state=active]:bg-sb-surface-hover data-[state=active]:text-sb-text-primary text-sb-text-secondary hover:text-sb-text-primary'
           >
             My profile
           </TabsTrigger>
           <TabsTrigger 
             value='password'
-            className='data-[state=active]:bg-[#4A5568] data-[state=active]:text-white text-[#A0AEC0] hover:text-white'
+            className='data-[state=active]:bg-sb-surface-hover data-[state=active]:text-sb-text-primary text-sb-text-secondary hover:text-sb-text-primary'
           >
             Password
           </TabsTrigger>
@@ -60,41 +60,41 @@ export default function UserSettingsClient() {
 
         <TabsContent value='profile' className='mt-4'>
           <div className='max-w-xl'>
-            <h2 className='text-base font-medium mb-3 text-white'>User Information</h2>
+            <h2 className='text-base font-medium mb-3 text-sb-text-primary'>User Information</h2>
             <form action={profileAction} className='space-y-4'>
               <div>
-                <label className='block text-sm font-medium mb-2 text-white'>
+                <label className='block text-sm font-medium mb-2 text-sb-text-primary'>
                   Full name
                 </label>
                 <Input
                   name='full_name'
                   defaultValue={profileDefaults.full_name}
                   placeholder='John Doe'
-                  className='bg-[#4A5568] border-[#4A5568] text-white placeholder-[#A0AEC0] focus:ring-[#2563EB]'
+                  className='bg-sb-surface-hover border-sb-border text-sb-text-primary placeholder-sb-text-secondary focus:ring-sb-primary'
                 />
               </div>
               <div>
-                <label className='block text-sm font-medium mb-2 text-white'>Email</label>
+                <label className='block text-sm font-medium mb-2 text-sb-text-primary'>Email</label>
                 <Input
                   name='email'
                   type='email'
                   defaultValue={profileDefaults.email}
                   placeholder='you@example.com'
-                  className='bg-[#4A5568] border-[#4A5568] text-white placeholder-[#A0AEC0] focus:ring-[#2563EB]'
+                  className='bg-sb-surface-hover border-sb-border text-sb-text-primary placeholder-sb-text-secondary focus:ring-sb-primary'
                 />
               </div>
               <div className='flex gap-2'>
                 <Button 
                   type='submit' 
                   disabled={profilePending}
-                  className='bg-[#2563EB] hover:bg-[#1D4ED8] text-white border-0'
+                  className='bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary border-0'
                 >
                   Save{profilePending && '…'}
                 </Button>
                 <Button 
                   type='reset' 
                   variant='outline'
-                  className='bg-[#4A5568] hover:bg-[#5A6578] text-white border-[#4A5568]'
+                  className='bg-sb-surface-hover hover:bg-sb-surface-active text-sb-text-primary border-sb-border'
                 >
                   Cancel
                 </Button>
@@ -116,7 +116,7 @@ export default function UserSettingsClient() {
 
         <TabsContent value='password' className='mt-4'>
           <div className='max-w-xl'>
-            <h2 className='text-base font-medium mb-3 text-white'>Reset password</h2>
+            <h2 className='text-base font-medium mb-3 text-sb-text-primary'>Reset password</h2>
             <form action={passwordAction} className='space-y-4'>
               <PasswordInput
                 id='current_password'
@@ -132,14 +132,14 @@ export default function UserSettingsClient() {
                 <Button 
                   type='submit' 
                   disabled={passwordPending}
-                  className='bg-[#2563EB] hover:bg-[#1D4ED8] text-white border-0'
+                  className='bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary border-0'
                 >
                   Save{passwordPending && '…'}
                 </Button>
                 <Button 
                   type='reset' 
                   variant='outline'
-                  className='bg-[#4A5568] hover:bg-[#5A6578] text-white border-[#4A5568]'
+                  className='bg-sb-surface-hover hover:bg-sb-surface-active text-sb-text-primary border-sb-border'
                 >
                   Cancel
                 </Button>

@@ -33,11 +33,11 @@ export function CreateCourse() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbPage className='text-[#A0AEC0]'>Create</BreadcrumbPage>
+              <BreadcrumbPage className='text-sb-text-secondary'>Create</BreadcrumbPage>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className='text-[#A0AEC0]'>Documents</BreadcrumbPage>
+              <BreadcrumbPage className='text-sb-text-secondary'>Documents</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -45,7 +45,7 @@ export function CreateCourse() {
       {step === STEPS.CREATE_COURSE ? (
         <>
           <div className='mb-8'>
-            <h1 className='text-2xl font-semibold text-white'>
+              <h1 className='text-2xl font-semibold text-sb-text-primary'>
               Create a new project
             </h1>
           </div>
@@ -56,7 +56,7 @@ export function CreateCourse() {
       ) : (
         <>
           <div className='mb-8'>
-            <h1 className='text-2xl font-semibold text-white'>
+              <h1 className='text-2xl font-semibold text-sb-text-primary'>
               Upload Documents
             </h1>
           </div>

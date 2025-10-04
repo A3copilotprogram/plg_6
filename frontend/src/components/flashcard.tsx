@@ -48,13 +48,13 @@ export default function Flashcard({courseId,}) {
         <Button
           onClick={() => generateFlashcards()}
           disabled={loading}
-          className={`bg-[#2563EB] hover:bg-[#1D4ED8] text-white border-0 ${loading && 'loading'}`}
+          className={`bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary border-0 ${loading && 'loading'}`}
         >
           {loading ? 'Generating flashcards' : 'Generate Flashcards'}
         </Button>
       </div>
       {cards.length > 0 ? (
-        <div className="flex flex-col items-center gap-4 bg-[#1A202C] min-h-[400px] justify-center">
+        <div className="flex flex-col items-center gap-4 bg-sb-background min-h-[400px] justify-center">
           <div className="w-[70%] h-40 relative perspective-1000">
             <AnimatePresence>
               <motion.div
@@ -111,26 +111,26 @@ export default function Flashcard({courseId,}) {
           <div className="flex gap-2 mt-5">
             <button
               onClick={handlePrev}
-              className="px-4 py-2 bg-[#4A5568] text-white rounded hover:bg-[#5A6578] transition-colors duration-200"
+              className="px-4 py-2 bg-sb-surface-hover text-sb-text-primary rounded hover:bg-sb-surface-active transition-colors duration-200"
             >
               Previous
             </button>
             <button
               onClick={toggleAnswer}
-              className="px-4 py-2 bg-[#2563EB] text-white rounded hover:bg-[#1D4ED8] transition-colors duration-200"
+              className="px-4 py-2 bg-sb-primary text-sb-text-primary rounded hover:bg-sb-primary-hover transition-colors duration-200"
             >
               {showAnswer ? "Hide Answer" : "Reveal Answer"}
             </button>
             <button
               onClick={handleNext}
-              className="px-4 py-2 bg-[#4A5568] text-white rounded hover:bg-[#5A6578] transition-colors duration-200"
+              className="px-4 py-2 bg-sb-surface-hover text-sb-text-primary rounded hover:bg-sb-surface-active transition-colors duration-200"
             >
               Next
             </button>
           </div>
         </div>
       ) : (
-        <div className="text-center text-[#A0AEC0] py-12">
+        <div className="text-center text-sb-text-secondary py-12">
           No flashcards available yet. You can click on generate to create.
         </div>
       )}

@@ -18,7 +18,7 @@ const PasswordInput: React.FC<
     <div className={`relative ${className}`}>
       <label
         htmlFor='password'
-        className='block text-sm font-medium mb-2 text-white'
+        className='block text-sm font-medium mb-2 text-sb-text-primary'
       >
         {label}
       </label>
@@ -27,22 +27,22 @@ const PasswordInput: React.FC<
         type={showPassword ? 'text' : 'password'}
         placeholder='••••••••••'
         required
-        className={`w-full px-4 py-3 pr-12 border rounded-md focus:outline-none focus:ring-2 transition-colors bg-[#4A5568] text-white placeholder-[#A0AEC0] ${
+        className={`w-full px-4 py-3 pr-12 border rounded-md focus:outline-none focus:ring-2 transition-colors bg-sb-surface-hover text-sb-text-primary placeholder-sb-text-secondary ${
           error
             ? 'border-red-400 focus:ring-red-400 focus:border-red-400'
-            : 'border-[#4A5568] focus:ring-[#2563EB] focus:border-[#2563EB]'
+            : 'border-sb-border focus:ring-sb-primary focus:border-sb-primary'
         }`}
       />
       <button
         type='button'
         aria-label={showPassword ? 'Hide password' : 'Show password'}
-        className='absolute right-3 top-9 text-[#A0AEC0] hover:text-white p-1.5'
+        className='absolute right-3 top-9 text-sb-text-secondary hover:text-sb-text-primary p-1.5'
         onClick={() => setShowPassword(!showPassword)}
       >
         {showPassword ? (
-          <Eye height={20} width={20} className='text-[#A0AEC0] hover:text-white' />
+          <Eye height={20} width={20} className='text-sb-text-secondary hover:text-sb-text-primary' />
         ) : (
-          <EyeOff height={20} width={20} className='text-[#A0AEC0] hover:text-white' />
+          <EyeOff height={20} width={20} className='text-sb-text-secondary hover:text-sb-text-primary' />
         )}
         <span className='sr-only'>
           {showPassword ? 'Hide password' : 'Show password'}

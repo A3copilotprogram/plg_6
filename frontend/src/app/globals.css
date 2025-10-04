@@ -41,6 +41,19 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Miro Design Colors */
+  --color-sb-background: #1A202C;
+  --color-sb-surface: #2D3748;
+  --color-sb-surface-hover: #4A5568;
+  --color-sb-surface-active: #5A6578;
+  --color-sb-primary: #2563EB;
+  --color-sb-primary-hover: #1D4ED8;
+  --color-sb-primary-light: #60A5FA;
+  --color-sb-text-primary: #FFFFFF;
+  --color-sb-text-secondary: #A0AEC0;
+  --color-sb-border: #4A5568;
+  --color-sb-border-light: #2D3748;
 }
 
 :root {

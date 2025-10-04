@@ -7,34 +7,34 @@ export default function FileCard({file}: {file: DocumentPublic}) {
   const onRemove = () => {}
 
   return (
-    <div className='inset-ring-1 inset-ring-[#4A5568] rounded-lg p-4 flex items-center gap-3 relative mb-3 bg-[#2D3748] border border-[#4A5568]'>
+    <div className='inset-ring-1 inset-ring-sb-border rounded-lg p-4 flex items-center gap-3 relative mb-3 bg-sb-surface border border-sb-border'>
       {/* File Icon */}
       <div className='flex-shrink-0'>
-        <FileText className='w-5 h-5 text-[#A0AEC0]' />
+        <FileText className='w-5 h-5 text-sb-text-secondary' />
       </div>
 
       {/* File Info */}
       <div className='flex-1 min-w-0'>
-        <div className='text-white text-sm font-medium truncate'>
+        <div className='text-sb-text-primary text-sm font-medium truncate'>
           {filename}
         </div>
 
         {/* Status and Progress */}
         {status === 'pending' && (
           <div className='flex items-center gap-2 mt-1'>
-            <Loader className='w-4 h-4 text-[#A0AEC0] animate-spin' />
-            <span className='text-[#A0AEC0] text-xs'>Uploading...</span>
+            <Loader className='w-4 h-4 text-sb-text-secondary animate-spin' />
+            <span className='text-sb-text-secondary text-xs'>Uploading...</span>
           </div>
         )}
 
         {status === 'processing' && (
           <div className='mt-2'>
             <div className='flex items-center justify-between mb-1'>
-              <span className='text-[#A0AEC0] text-xs'>70%</span>
+              <span className='text-sb-text-secondary text-xs'>70%</span>
             </div>
-            <div className='w-full bg-[#4A5568] rounded-full h-1'>
+            <div className='w-full bg-sb-border rounded-full h-1'>
               <div
-                className='bg-[#2563EB] h-1 rounded-full transition-all duration-300 block'
+                className='bg-sb-primary h-1 rounded-full transition-all duration-300 block'
                 style={{width: `60%`}}
               />
             </div>
@@ -59,7 +59,7 @@ export default function FileCard({file}: {file: DocumentPublic}) {
       <div className='flex-shrink-0 flex items-center gap-2'>
         <button
           onClick={onRemove}
-          className='w-6 h-6 text-[#A0AEC0] hover:text-red-400 transition-colors'
+          className='w-6 h-6 text-sb-text-secondary hover:text-red-400 transition-colors'
         >
           <X className='w-4 h-4' />
         </button>

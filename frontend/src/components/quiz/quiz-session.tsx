@@ -21,23 +21,23 @@ export default async function QuizComponent({
   }
 
   return (
-    <div className='h-full flex flex-col bg-[#1A202C]'>
+    <div className='h-full flex flex-col bg-sb-background'>
       {result.data.map((quiz) => (
         <div className='flex flex-col gap-6 mb-8'>
-          <p className='text-lg text-white'>
+          <p className='text-lg text-sb-text-primary'>
             {quiz.quiz_text}
           </p>
           <ul>
             {quiz.choices.map((choice) => (
               <div className='flex gap-3 mb-4' key={choice.id}>
-                <Checkbox id={choice.id} value={choice.id} className='border-[#4A5568] data-[state=checked]:bg-[#2563EB] data-[state=checked]:border-[#2563EB]' />
-                <Label htmlFor={choice.id} className='text-white'>
+                <Checkbox id={choice.id} value={choice.id} className='border-sb-border data-[state=checked]:bg-sb-primary data-[state=checked]:border-sb-primary' />
+                <Label htmlFor={choice.id} className='text-sb-text-primary'>
                   <span className='capitalize text-sm/snug'>{choice.text}</span>
                 </Label>
               </div>
             ))}
           </ul>
-          <Separator className='bg-[#4A5568]' />
+          <Separator className='bg-sb-border' />
         </div>
       ))}
     </div>

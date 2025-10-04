@@ -33,7 +33,7 @@ export default function QuizStartComponent({courseId}: {courseId: string}) {
           <Button
             variant='default'
             type='submit'
-            className='mr-4 bg-[#2563EB] hover:bg-[#1D4ED8] text-white border-0'
+            className='mr-4 bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary border-0'
             disabled={isPending}
           >
             <span>Start Quiz</span>
@@ -46,33 +46,33 @@ export default function QuizStartComponent({courseId}: {courseId: string}) {
               <Button
                 variant='outline'
                 type='button'
-                className='min-w-[120px] flex justify-start items-center bg-[#4A5568] border-[#4A5568] text-white hover:bg-[#5A6578]'
+                className='min-w-[120px] flex justify-start items-center bg-sb-surface-hover border-sb-border text-sb-text-primary hover:bg-sb-surface-active'
               >
                 <ChevronDown className='h-4 w-4' />
                 {difficultyLevel}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='start' className='w-[200px] bg-[#2D3748] border-[#4A5568]'>
+            <DropdownMenuContent align='start' className='w-[200px] bg-sb-surface border-sb-border'>
               <DropdownMenuItem
-                className='gap-2 text-white hover:bg-[#4A5568] hover:text-white'
+                className='gap-2 text-sb-text-primary hover:bg-sb-surface-hover hover:text-sb-text-primary'
                 onClick={() => setDifficultyLevel('easy')}
               >
                 <span>Easy</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className='gap-2 text-white hover:bg-[#4A5568] hover:text-white'
+                className='gap-2 text-sb-text-primary hover:bg-sb-surface-hover hover:text-sb-text-primary'
                 onClick={() => setDifficultyLevel('medium')}
               >
                 <span>Medium</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className='gap-2 text-white hover:bg-[#4A5568] hover:text-white'
+                className='gap-2 text-sb-text-primary hover:bg-sb-surface-hover hover:text-sb-text-primary'
                 onClick={() => setDifficultyLevel('hard')}
               >
                 <span>Hard</span>
               </DropdownMenuItem>
               <DropdownMenuItem
-                className='gap-2 text-white hover:bg-[#4A5568] hover:text-white'
+                className='gap-2 text-sb-text-primary hover:bg-sb-surface-hover hover:text-sb-text-primary'
                 onClick={() => setDifficultyLevel('easy')}
               >
                 <span>All</span>

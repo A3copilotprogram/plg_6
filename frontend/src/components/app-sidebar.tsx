@@ -21,6 +21,7 @@ import {
 import { getCourses } from '@/actions/courses'
 import { CourseWithOptionalDate } from '@/types/date'
 import Link from 'next/link'
+
 export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
   const [courses, setCourses] = useState<CourseWithOptionalDate[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -52,18 +53,18 @@ export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
   const currentCourseId = getCurrentCourseId()
 
   return (
-    <Sidebar className='bg-[#2D3748] border-r border-[#4A5568]'>
-      <SidebarHeader className='bg-[#2D3748] border-b border-[#4A5568]'>
+    <Sidebar className='bg-sb-surface border-r border-sb-border'>
+      <SidebarHeader className='bg-sb-surface border-b border-sb-border'>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className='hover:bg-[#4A5568] hover:text-white transition-colors duration-200'>
+            <SidebarMenuButton asChild className='hover:bg-sb-surface-hover hover:text-sb-text-primary transition-colors duration-200'>
               <Link href='/dashboard'>
                 <div className='flex items-center'>
-                  <div className='bg-[#2563EB] text-white flex aspect-square size-8 items-center justify-center rounded-lg mr-4'>
-                    <span className='text-white font-bold text-sm'>S</span>
+                  <div className='bg-sb-primary text-sb-text-primary flex aspect-square size-8 items-center justify-center rounded-lg mr-4'>
+                    <span className='text-sb-text-primary font-bold text-sm'>S</span>
                   </div>
                   <div className='flex flex-col gap-0.5 leading-none'>
-                    <span className='font-medium text-white'>StudyBuddy</span>
+                    <span className='font-medium text-sb-text-primary'>StudyBuddy</span>
                   </div>
                 </div>
               </Link>
@@ -71,16 +72,16 @@ export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className='bg-[#2D3748] pb-20'>
+      <SidebarContent className='bg-sb-surface pb-20'>
         <SidebarGroup>
-          <SidebarGroupLabel className='text-white font-semibold'>Projects</SidebarGroupLabel>
+          <SidebarGroupLabel className='text-sb-text-primary font-semibold'>Projects</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild className='text-white hover:bg-[#4A5568] transition-colors duration-200'>
+                <SidebarMenuButton asChild className='text-sb-text-primary hover:bg-sb-surface-hover transition-colors duration-200'>
                   <Link href='/dashboard'>
-                    <Home className='text-white' />
-                    <span className='text-white'>Dashboard</span>
+                    <Home className='text-sb-text-primary' />
+                    <span className='text-sb-text-primary'>Dashboard</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -94,13 +95,13 @@ export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
             <SidebarMenu>
               {isLoading ? (
                 <SidebarMenuItem>
-                  <SidebarMenuButton className='text-[#A0AEC0] p-2'>
+                  <SidebarMenuButton className='text-sb-text-secondary p-2'>
                     <span>Loading projects...</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ) : courses.length === 0 ? (
                 <SidebarMenuItem>
-                  <SidebarMenuButton className='text-[#A0AEC0] p-2'>
+                  <SidebarMenuButton className='text-sb-text-secondary p-2'>
                     <span>No projects yet</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -111,15 +112,15 @@ export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
                     <SidebarMenuItem key={course.id}>
                       <SidebarMenuButton 
                         asChild
-                        className={`transition-colors duration-200 p-2 ${
+                        className={`transition-colors duration-200 p-2 sidebar-accent-foreground:!text-sb-text-primary sidebar-accent:!bg-sb-surface-hover ${
                           isActive 
-                            ? 'bg-[#4A5568] text-white' 
-                            : 'text-[#A0AEC0] hover:bg-[#4A5568] hover:text-white'
+                            ? 'bg-sb-surface-hover text-sb-text-primary' 
+                            : 'text-sb-text-secondary hover:bg-sb-surface-hover hover:text-sb-text-primary'
                         }`}
                       >
                         <Link href={`/dashboard/courses/${course.id}?tab=chat`}>
                           <File className={`w-4 h-4 mr-3 transition-colors duration-200 ${
-                            isActive ? 'text-white' : 'text-[#A0AEC0] group-hover:text-white'
+                            isActive ? 'text-sb-text-primary' : 'text-sb-text-secondary group-hover:text-sb-text-primary'
                           }`} />
                           <span className='truncate'>{course.name}</span>
                         </Link>
@@ -135,10 +136,10 @@ export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
       </SidebarContent>
       
       {/* Fixed Add New Project Button at Bottom */}
-      <div className='absolute bottom-0 left-0 right-0 p-4 bg-[#2D3748] border-t border-[#4A5568]'>
+      <div className='absolute bottom-0 left-0 right-0 p-4 bg-sb-surface border-t border-sb-border'>
         <Button 
           asChild
-          className='w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white border-0 justify-start'
+          className='w-full bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary border-0 justify-start'
         >
           <Link href='/dashboard/courses/create'>
             <Plus className='w-4 h-4 mr-2' />

@@ -29,7 +29,7 @@ export function CourseForm() {
           id='name'
           name='name'
           placeholder="e.g., 'History of Ancient Rome'"
-          className='w-full bg-[#4A5568] border-[#4A5568] text-white placeholder-[#A0AEC0] focus:ring-[#2563EB] h-12'
+          className='w-full bg-sb-surface-hover border-sb-border text-sb-text-primary placeholder-sb-text-secondary focus:ring-sb-primary h-12'
           required
         />
       </div>
@@ -40,31 +40,31 @@ export function CourseForm() {
           id='description'
           name='description'
           placeholder='A brief summary of what this project is about.'
-          className='min-h-[120px] resize-none bg-[#4A5568] border-[#4A5568] text-white placeholder-[#A0AEC0] focus:ring-[#2563EB]'
+          className='min-h-[120px] resize-none bg-sb-surface-hover border-sb-border text-sb-text-primary placeholder-sb-text-secondary focus:ring-sb-primary'
           required
         />
       </div>
 
       <div className='space-y-2'>
         <Label className='text-white font-medium'>Upload Documents</Label>
-        <div className='border-2 border-dashed border-[#4A5568] rounded-lg p-8 text-center bg-[#4A5568] hover:border-[#60A5FA] hover:bg-[#4A5568]/80 transition-colors cursor-pointer'>
+        <div className='border-2 border-dashed border-sb-border rounded-lg p-8 text-center bg-sb-surface-hover hover:border-sb-primary-light hover:bg-sb-surface-hover/80 transition-colors cursor-pointer'>
           <div className='flex flex-col items-center gap-4'>
-            <Cloud className='h-12 w-12 text-[#A0AEC0]' />
+            <Cloud className='h-12 w-12 text-sb-text-secondary' />
             <div className='space-y-2'>
-              <p className='text-lg font-medium text-white'>
+              <p className='text-lg font-medium text-sb-text-primary'>
                 Drag and drop files here
               </p>
-              <p className='text-sm text-[#A0AEC0]'>PDFs, DOCs (max. 25MB)</p>
+              <p className='text-sm text-sb-text-secondary'>PDFs, DOCs (max. 25MB)</p>
               <div className='flex items-center justify-center gap-2 my-3'>
-                <div className='h-px bg-[#2D3748] flex-1' />
-                <span className='text-sm text-[#A0AEC0]'>or</span>
-                <div className='h-px bg-[#2D3748] flex-1' />
+                <div className='h-px bg-sb-border-light flex-1' />
+                <span className='text-sm text-sb-text-secondary'>or</span>
+                <div className='h-px bg-sb-border-light flex-1' />
               </div>
               <Button
                 type='button'
                 variant='secondary'
                 size='sm'
-                className='bg-[#2D3748] hover:bg-[#4A5568] text-white border-[#4A5568]'
+                className='bg-sb-border-light hover:bg-sb-surface-hover text-sb-text-primary border-sb-border'
               >
                 Browse Files
               </Button>
@@ -77,13 +77,13 @@ export function CourseForm() {
         <Button
           type='button'
           variant='secondary'
-          className='bg-[#4A5568] hover:bg-[#5A6578] text-white border-[#4A5568]'
+          className='bg-sb-surface-hover hover:bg-sb-surface-active text-sb-text-primary border-sb-border'
           disabled={isPending}
           onClick={handleGoBack}
         >
           Cancel
         </Button>
-        <Button type='submit' className='bg-[#2563EB] hover:bg-[#1D4ED8] text-white border-0' disabled={isPending}>
+        <Button type='submit' className='bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary border-0' disabled={isPending}>
           {isPending ? 'Creating...' : 'Create Project'}
         </Button>
       </div>
