@@ -2,9 +2,9 @@
 
 import {useState} from 'react'
 import Link from 'next/link'
+import {Zap} from 'react-feather'
 
 import {emailPattern} from '@/lib/auth'
-import AuthBackground from '@/components/ui/auth/AuthBackground'
 
 export default function RecoverPasswordPage() {
   const [error, _setError] = useState<string | null>(null)
@@ -70,38 +70,60 @@ export default function RecoverPasswordPage() {
 
   if (isSubmitted) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8'>
-        <div className='max-w-md w-full space-y-8 text-center'>
-          <div>
-            <div className='mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-green-100'>
-              <svg
-                className='h-6 w-6 text-green-600'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M5 13l4 4L19 7'
-                />
-              </svg>
+      <div className='min-h-screen bg-sb-background flex flex-col'>
+        {/* Header */}
+        <header className='flex justify-between items-center px-4 sm:px-6 py-4 border-b border-sb-border'>
+          <div className='flex items-center space-x-2'>
+            <div className='w-8 h-8 bg-sb-primary rounded-lg flex items-center justify-center'>
+              <Zap className='w-4 h-4 text-sb-text-primary' />
             </div>
-            <h2 className='mt-6 text-center text-3xl font-extrabold text-slate-900'>
-              Check your email
-            </h2>
-            <p className='mt-2 text-center text-sm text-slate-600'>
-              We&apos;ve sent a password recovery link to your email address.
-            </p>
+            <span className='text-sb-text-primary text-lg sm:text-xl font-semibold'>StudyBuddy</span>
           </div>
-          <div className='mt-8'>
-            <Link
-              href='/login'
-              className='group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500'
-            >
-              Back to Sign in
-            </Link>
+          <Link 
+            href='/login' 
+            className='text-sb-text-primary hover:text-sb-primary-light transition-colors duration-200 text-sm sm:text-base'
+          >
+            Sign In
+          </Link>
+        </header>
+
+        {/* Main Content */}
+        <div className='flex-1 flex items-center justify-center px-4 sm:px-6 py-8'>
+          <div className='w-full max-w-md'>
+            {/* Title and Subtitle - Outside the card */}
+            <div className='text-center mb-8'>
+              <h1 className='text-3xl sm:text-4xl font-bold text-sb-text-primary mb-3'>
+                Check your email
+              </h1>
+              <p className='text-sb-text-secondary text-base'>
+                We&apos;ve sent a password recovery link to your email address.
+              </p>
+            </div>
+
+            {/* Success Card */}
+            <div className='bg-sb-surface rounded-lg p-6 sm:p-8 shadow-xl text-center'>
+              <div className='mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-500/20 mb-6'>
+                <svg
+                  className='h-8 w-8 text-green-400'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M5 13l4 4L19 7'
+                  />
+                </svg>
+              </div>
+              <Link
+                href='/login'
+                className='w-full py-3 px-4 bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary font-semibold rounded-md transition-colors duration-200 inline-block'
+              >
+                Back to Sign In
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -109,68 +131,103 @@ export default function RecoverPasswordPage() {
   }
 
   return (
-    <div className='flex min-h-screen'>
-      {/* Left side - Form */}
-      <div className='w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24'>
-        <div className='max-w-md mx-auto w-full'>
-          <h1 className='text-3xl font-bold mb-4'>Password Recovery</h1>
-          <p className='text-slate-600 mb-10'>
-            A password recovery email will be sent to the registered account.
-          </p>
+    <div className='min-h-screen bg-sb-background flex flex-col'>
+      {/* Header */}
+      <header className='flex justify-between items-center px-4 sm:px-6 py-4 border-b border-sb-border'>
+        <div className='flex items-center space-x-2'>
+          <div className='w-8 h-8 bg-sb-primary rounded-lg flex items-center justify-center'>
+            <Zap className='w-4 h-4 text-sb-text-primary' />
+          </div>
+          <span className='text-sb-text-primary text-lg sm:text-xl font-semibold'>StudyBuddy</span>
+        </div>
+        <Link 
+          href='/login' 
+          className='text-sb-text-primary hover:text-sb-primary-light transition-colors duration-200 text-sm sm:text-base'
+        >
+          Sign In
+        </Link>
+      </header>
 
-          <form onSubmit={handleSubmit} className='space-y-6'>
-            <div>
-              <label htmlFor='email' className='block text-sm font-medium mb-2'>
-                Email address
-              </label>
-              <input
-                id='email'
-                name='email'
-                type='email'
-                placeholder='Enter your email'
-                required
-                value={email}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 transition-colors ${
-                  emailError || error
-                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                    : 'border-slate-300 focus:ring-cyan-500 focus:border-cyan-500'
-                }`}
-              />
-              {emailError && (
-                <p className='mt-1 text-sm text-red-600'>{emailError}</p>
-              )}
-            </div>
+      {/* Main Content */}
+      <div className='flex-1 flex items-center justify-center px-4 sm:px-6 py-8'>
+        <div className='w-full max-w-md'>
+          {/* Title and Subtitle - Outside the card */}
+          <div className='text-center mb-8'>
+            <h1 className='text-3xl sm:text-4xl font-bold text-sb-text-primary mb-3'>
+              Password Recovery
+            </h1>
+            <p className='text-sb-text-secondary text-base'>
+              A password recovery email will be sent to the registered account.
+            </p>
+          </div>
 
-            {error && (
-              <div className='text-red-500 text-sm bg-red-50 border border-red-200 rounded-md p-3'>
-                {error}
+          {/* Recovery Card */}
+          <div className='bg-sb-surface rounded-lg p-6 sm:p-8 shadow-xl'>
+            {/* Form */}
+            <form onSubmit={handleSubmit} className='space-y-4'>
+              {/* Email Field */}
+              <div>
+                <label htmlFor='email' className='block text-sb-text-primary text-sm font-medium mb-2'>
+                  Email address
+                </label>
+                <div className='relative'>
+                  <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                    <svg className='h-5 w-5 text-sb-text-secondary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207' />
+                    </svg>
+                  </div>
+                  <input
+                    id='email'
+                    name='email'
+                    type='email'
+                    placeholder='Enter your email'
+                    required
+                    value={email}
+                    onChange={handleInputChange}
+                    onBlur={handleBlur}
+                    className={`w-full pl-10 pr-4 py-3 bg-sb-surface-hover border-0 rounded-md text-sb-text-primary placeholder-sb-text-secondary focus:outline-none focus:ring-2 transition-colors duration-200 ${
+                      emailError || error
+                        ? 'focus:ring-red-500'
+                        : 'focus:ring-sb-primary'
+                    }`}
+                  />
+                </div>
+                {emailError && (
+                  <p className='mt-1 text-sm text-red-400'>{emailError}</p>
+                )}
               </div>
-            )}
 
-            <button
-              type='submit'
-              className='w-full py-3 px-4 bg-cyan-600 hover:bg-cyan-700 disabled:bg-cyan-400 disabled:cursor-not-allowed text-white font-medium rounded-md transition-colors duration-200'
-              disabled={isLoading}
-            >
-              {isLoading ? 'Sending...' : 'Send Recovery Email'}
-            </button>
-          </form>
+              {error && (
+                <div className='text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-md p-3'>
+                  {error}
+                </div>
+              )}
 
+              {/* Submit Button */}
+              <button
+                type='submit'
+                className='w-full py-3 px-4 bg-sb-primary hover:bg-sb-primary-hover disabled:bg-sb-primary-hover disabled:cursor-not-allowed text-sb-text-primary font-semibold rounded-md transition-colors duration-200 mt-2'
+                disabled={isLoading}
+              >
+                {isLoading ? 'Sending...' : 'Send Recovery Email'}
+              </button>
+            </form>
+          </div>
+
+          {/* Footer Link */}
           <div className='text-center mt-6'>
-            <Link
-              href='/login'
-              className='text-cyan-600 hover:text-cyan-500 hover:underline text-sm'
-            >
-              Back to Sign in
-            </Link>
+            <p className='text-sb-text-secondary text-base'>
+              Remember your password?{' '}
+              <Link
+                href='/login'
+                className='text-sb-primary hover:text-sb-primary-hover font-medium transition-colors duration-200'
+              >
+                Sign In
+              </Link>
+            </p>
           </div>
         </div>
       </div>
-
-      {/* Right side - Background */}
-      <AuthBackground />
     </div>
   )
 }

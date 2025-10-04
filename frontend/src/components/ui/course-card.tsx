@@ -24,9 +24,9 @@ export default function CourseCard({
   const createdLabel = formatDate(course.created_at) ?? '-'
 
   return (
-    <Card className={cn('bg-muted/20 py-4 justify-between', className)}>
+    <Card className={cn('bg-sb-surface border-sb-border py-4 justify-between hover:bg-sb-surface-hover transition-colors duration-200', className)}>
       <CardHeader className='[.border-b]:pb-4'>
-        <CardTitle className='text-lg break-word line-clamp-3'>{course.name}</CardTitle>
+        <CardTitle className='text-lg break-word line-clamp-3 text-sb-text-primary'>{course.name}</CardTitle>
         <div data-slot='card-action'>
           <Link
             href={{
@@ -35,7 +35,7 @@ export default function CourseCard({
             }}
             as={`/dashboard/courses/${course.id}?tab=chat`}
           >
-            <span className='text-xs inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-muted-foreground hover:text-cyan-500 pointer hover:border-cyan-500'>
+            <span className='text-xs inline-flex items-center gap-1 rounded-full border border-sb-border px-2 py-0.5 text-sb-text-secondary hover:text-sb-primary hover:border-sb-primary transition-colors duration-200'>
               <ArrowUpRight className='size-3' />
               Details
             </span>
@@ -43,16 +43,16 @@ export default function CourseCard({
         </div>
       </CardHeader>
       <CardContent className='pt-0'>
-        <CardDescription className='line-clamp-2'>
+        <CardDescription className='line-clamp-2 text-sb-text-secondary'>
           {course.description ?? 'No description'}
         </CardDescription>
       </CardContent>
       <CardFooter className='pt-0 flex justify-between'>
-        <div className='text-sm text-muted-foreground flex items-center gap-2'>
+        <div className='text-sm text-sb-text-secondary flex items-center gap-2'>
           <Calendar className='size-3' />
           <span className='text-xs'>{createdLabel}</span>
         </div>
-        <div className='text-sm text-muted-foreground flex items-center gap-2'>
+        <div className='text-sm text-sb-text-secondary flex items-center gap-2'>
           <DeleteCourse courseId={course.id} />
         </div>
       </CardFooter>

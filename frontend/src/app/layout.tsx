@@ -3,7 +3,7 @@ import './globals.css'
 import type {Metadata} from 'next'
 import {DM_Sans, DM_Mono} from 'next/font/google'
 import {Toaster} from '@/components/ui/sonner'
-import {ThemeProvider} from 'next-themes'
+// import {ThemeProvider} from 'next-themes'
 
 const dmSans = DM_Sans({
   variable: '--font-dn-serif',
@@ -30,10 +30,10 @@ export default async function RootLayout({
   return (
     <html lang='en'>
       <body className={`${dmSans.variable} ${dmSansMono.variable} antialiased`}>
-        <ThemeProvider attribute='class' defaultTheme='light' enableSystem>
-          <main>{children}</main>
-          <Toaster />
-        </ThemeProvider>
+        {/* <ThemeProvider> */}
+        <main>{children}</main>
+        <Toaster />
+        {/* </ThemeProvider> */}
       </body>
     </html>
   )

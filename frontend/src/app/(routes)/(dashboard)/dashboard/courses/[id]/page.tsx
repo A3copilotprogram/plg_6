@@ -4,7 +4,7 @@ import {getCourse} from '@/actions/courses'
 import ErrorBox from '@/components/ui/ErrorBox'
 import {Tabs, TabsContent, TabsList, StyledTabList} from '@/components/ui/tabs'
 import PageLoader from '@/components/ui/page-loader'
-import Flashcard from '@/components/flashcard';
+import Flashcard from '@/components/flashcard'
 
 const QuizComponent = dynamic(() => import('@/components/quiz/quiz'), {
   ssr: true,
@@ -29,35 +29,37 @@ export default async function Page(props: {params: Promise<{id: string}>}) {
   const course = result.data
 
   return (
-    <>
+    <div className='h-full bg-sb-content'>
       <Tabs
         defaultValue='quiz'
-        className='w-full h-full border-r-[1px] border-slate-700 overflow-y-hidden'
+        className='w-full h-full'
       >
-        <TabsList className='w-full justify-start bg-transparent border-b border-slate-300 rounded-none h-12 p-0'>
+        <TabsList className='w-full justify-start bg-sb-background border-b border-sb-border rounded-none h-12 p-0 sticky top-0 z-20'>
           <StyledTabList name='quiz' />
           <StyledTabList name='chat' />
           <StyledTabList name='flashcard' />
           <StyledTabList name='podcast' />
         </TabsList>
-        <TabsContent value='quiz' className='p-6'>
-          <QuizComponent course={course} />
-        </TabsContent>
+        <div className='overflow-y-auto h-[calc(100vh-7rem)]'>
+          <TabsContent value='quiz' className='p-6 bg-sb-content m-0'>
+            <QuizComponent course={course} />
+          </TabsContent>
 
-        <TabsContent value='chat' className='p-6'>
-          <ChatComponent courseId={id} />
-        </TabsContent>
+          <TabsContent value='chat' className='p-6 bg-sb-content m-0'>
+            <ChatComponent courseId={id} />
+          </TabsContent>
 
-      <TabsContent value='flashcard' className='p-6'>
-        <Flashcard courseId={id}/>
-      </TabsContent>
+          <TabsContent value='flashcard' className='p-6 bg-sb-content m-0'>
+            <Flashcard courseId={id}/>
+          </TabsContent>
 
-        <TabsContent value='podcast' className='p-6'>
-          <div className='text-center text-slate-400 py-12'>
-            Podcast content will be displayed here
-          </div>
-        </TabsContent>
+          <TabsContent value='podcast' className='p-6 bg-sb-content m-0'>
+            <div className='text-center text-sb-text-secondary py-12'>
+              Podcast content will be displayed here
+            </div>
+          </TabsContent>
+        </div>
       </Tabs>
-    </>
+    </div>
   )
 }

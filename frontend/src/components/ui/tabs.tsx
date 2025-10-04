@@ -67,8 +67,7 @@ function StyledTabList({name}: {name: string}) {
   return (
     <TabsTrigger
       value={name}
-      className='transition-all capitalize data-[state=active]:bg-transparent data-[state=active]:border-b-3 data-[state=active]:border-b-cyan-500 data-[state=active]:text-black rounded-none px-6 py-3 text-slate-700'
-
+          className='transition-all capitalize data-[state=active]:bg-transparent data-[state=active]:border-b-3 data-[state=active]:border-b-sb-primary data-[state=active]:text-sb-text-primary rounded-none px-6 py-3 text-sb-text-secondary hover:text-sb-text-primary hover:bg-sb-surface-hover'
     >
       {name}
     </TabsTrigger>

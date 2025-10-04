@@ -13,14 +13,14 @@ export default async function QuizStatsPage({courseId}: {courseId: string}) {
   return (
     <div className='mb-8 grid gap-6 md:grid-cols-3'>
       {/* Best Score Card */}
-      <div className='rounded-2xl border border-stone-200 bg-stone-50 p-6'>
+      <div className='rounded-2xl border border-sb-border bg-sb-surface p-6'>
         <div className='flex items-start gap-4'>
-          <Gift className='h-6 w-6 text-slate-600' />
+          <Gift className='h-6 w-6 text-sb-text-secondary' />
           <div>
-            <div className='text-sm text-slate-600'>Best Score</div>
-            <div className='mt-1 text-3xl font-semibold text-slate-900'>
+            <div className='text-sm text-sb-text-secondary'>Best Score</div>
+            <div className='mt-1 text-3xl font-semibold text-sb-text-primary'>
               {stats.best_total_correct}{' '}
-              <span className='text-xl text-slate-600'>
+              <span className='text-xl text-sb-text-secondary'>
                 /{stats.best_total_submitted}
               </span>
             </div>
@@ -29,26 +29,26 @@ export default async function QuizStatsPage({courseId}: {courseId: string}) {
       </div>
 
       {/* Average Card */}
-      <div className='rounded-2xl border border-stone-200 bg-stone-50 p-6'>
+      <div className='rounded-2xl border border-sb-border bg-sb-surface p-6'>
         <div className='flex items-start gap-4'>
-          <BarChart className='h-6 w-6 text-slate-600' />
+          <BarChart className='h-6 w-6 text-sb-text-secondary' />
           <div>
-            <div className='text-sm text-slate-600'>Average</div>
-            <div className='mt-1 text-3xl font-semibold text-slate-900'>
+            <div className='text-sm text-sb-text-secondary'>Average</div>
+            <div className='mt-1 text-3xl font-semibold text-sb-text-primary'>
               {stats.average_score}
-              <span className='text-xl text-slate-600'>%</span>
+              <span className='text-xl text-sb-text-secondary'>%</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Total Attempts Card */}
-      <div className='rounded-2xl border border-stone-200 bg-stone-50 p-6'>
+      <div className='rounded-2xl border border-sb-border bg-sb-surface p-6'>
         <div className='flex items-start gap-4'>
-          <Clock className='h-6 w-6 text-slate-600' />
+          <Clock className='h-6 w-6 text-sb-text-secondary' />
           <div>
-            <div className='text-sm text-slate-600'>Total Attempts</div>
-            <div className='mt-1 text-3xl font-semibold text-slate-900'>
+            <div className='text-sm text-sb-text-secondary'>Total Attempts</div>
+            <div className='mt-1 text-3xl font-semibold text-sb-text-primary'>
               {stats.attempts}
             </div>
           </div>

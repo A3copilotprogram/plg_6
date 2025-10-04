@@ -51,7 +51,7 @@ export default function UploadDocuments({courseId}: {courseId: string}) {
         <>
           <UploadComponent courseId={courseId} />
 
-          <Separator className='my-8' />
+          <Separator className='my-8 bg-sb-border' />
           {documents.length > 0 && (
             <div className='space-y-1'>
               {documents.map((file) => (
@@ -61,7 +61,11 @@ export default function UploadDocuments({courseId}: {courseId: string}) {
           )}
 
           <div className='flex justify-end mt-8'>
-            <Button onClick={handleRedirect} disabled={isDisabled}>
+            <Button 
+              onClick={handleRedirect} 
+              disabled={isDisabled}
+              className='bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary border-0'
+            >
               {isDisabled? "Uploading..." : "Complete" } <ChevronRight />
             </Button>
           </div>

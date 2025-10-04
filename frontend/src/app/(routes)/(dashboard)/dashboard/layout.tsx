@@ -8,6 +8,7 @@
   import { client } from '@/client/client.gen'
   import { cookies } from 'next/headers'
 import { getMe } from '@/actions/users'
+import UserAccountMenu from '@/components/user-account-menu'
 
   export default async function DashboardLayout({
     children,
@@ -33,14 +34,19 @@ import { getMe } from '@/actions/users'
     }
 
     return (
-      <SidebarProvider>
-        <AppSidebar displayName={displayName} />
-        <SidebarInset>
-          <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
-            <SidebarTrigger className='-ml-1' />
-          </header>
-          {children}
-        </SidebarInset>
-      </SidebarProvider>
+      <div className='min-h-screen bg-sb-background'>
+        <SidebarProvider>
+          <AppSidebar displayName={displayName} />
+          <SidebarInset>
+            <header className='sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-sb-border px-4 bg-sb-background'>
+              <SidebarTrigger className='-ml-1 text-sb-text-primary hover:text-sb-primary-light transition-colors duration-200' />
+              <UserAccountMenu displayName={displayName} />
+            </header>
+            <div className='bg-sb-content min-h-[calc(100vh-4rem)] overflow-y-auto'>
+              {children}
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
+      </div>
     )
   }
