@@ -52,12 +52,12 @@ export default function SignUpPage() {
     <div className="relative flex size-full min-h-screen flex-col overflow-x-hidden bg-[var(--secondary-color)]" style={{fontFamily: 'Inter, "Noto Sans", sans-serif'}}>
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between whitespace-nowrap px-10 py-5">
-        <div className="flex items-center gap-3 text-white">
+        <Link href="/" className="flex items-center gap-3 text-white hover:opacity-80 transition-opacity">
           <svg className="h-8 w-8 text-[var(--primary-color)]" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
             <path clipRule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor" fillRule="evenodd"></path>
           </svg>
           <h1 className="text-xl font-bold leading-tight tracking-[-0.015em]">StudyBuddy</h1>
-        </div>
+        </Link>
         <div className="flex items-center gap-4">
           <Link 
             href="/login" 
