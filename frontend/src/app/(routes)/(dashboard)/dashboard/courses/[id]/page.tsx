@@ -32,7 +32,7 @@ export default async function Page(props: {params: Promise<{id: string}>}) {
     <>
       <Tabs
         defaultValue='quiz'
-        className='w-full h-full border-r-[1px] border-sb-border overflow-y-hidden bg-sb-background'
+        className='w-full h-full border-r-[1px] border-sb-border overflow-y-hidden bg-sb-content'
       >
         <TabsList className='w-full justify-start bg-sb-surface border-b border-sb-border rounded-none h-12 p-0'>
           <StyledTabList name='quiz' />
@@ -40,19 +40,19 @@ export default async function Page(props: {params: Promise<{id: string}>}) {
           <StyledTabList name='flashcard' />
           <StyledTabList name='podcast' />
         </TabsList>
-        <TabsContent value='quiz' className='p-6 bg-sb-background'>
+        <TabsContent value='quiz' className='p-6 bg-sb-content'>
           <QuizComponent course={course} />
         </TabsContent>
 
-        <TabsContent value='chat' className='p-6 bg-sb-background'>
+        <TabsContent value='chat' className='p-6 bg-sb-content'>
           <ChatComponent courseId={id} />
         </TabsContent>
 
-        <TabsContent value='flashcard' className='p-6 bg-sb-background'>
+        <TabsContent value='flashcard' className='p-6 bg-sb-content'>
         <Flashcard courseId={id}/>
       </TabsContent>
 
-        <TabsContent value='podcast' className='p-6 bg-sb-background'>
+        <TabsContent value='podcast' className='p-6 bg-sb-content'>
           <div className='text-center text-sb-text-secondary py-12'>
             Podcast content will be displayed here
           </div>

@@ -39,7 +39,7 @@ export default function UserSettingsClient() {
   }, [])
 
   return (
-    <div className='flex flex-col gap-6 bg-sb-background min-h-screen p-6'>
+    <div className='flex flex-col gap-6 bg-sb-content min-h-screen p-6'>
       <h1 className='text-2xl font-semibold text-sb-text-primary'>User Settings</h1>
 
       <Tabs defaultValue='profile' className='w-full'>

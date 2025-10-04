@@ -53,8 +53,8 @@ export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
   const currentCourseId = getCurrentCourseId()
 
   return (
-    <Sidebar className='bg-sb-surface border-r border-sb-border'>
-      <SidebarHeader className='bg-sb-surface border-b border-sb-border'>
+    <Sidebar className='bg-sb-background border-r border-sb-border'>
+      <SidebarHeader className='bg-sb-background border-b border-sb-border'>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className='hover:bg-sb-surface-hover hover:text-sb-text-primary transition-colors duration-200'>
@@ -72,7 +72,7 @@ export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className='bg-sb-surface pb-20'>
+      <SidebarContent className='bg-sb-background pb-20'>
         <SidebarGroup>
           <SidebarGroupLabel className='text-sb-text-primary font-semibold'>Projects</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -136,7 +136,7 @@ export function AppSidebar({ displayName = 'User' }: { displayName?: string }) {
       </SidebarContent>
       
       {/* Fixed Add New Project Button at Bottom */}
-      <div className='absolute bottom-0 left-0 right-0 p-4 bg-sb-surface border-t border-sb-border'>
+      <div className='absolute bottom-0 left-0 right-0 p-4 bg-sb-background border-t border-sb-border'>
         <Button 
           asChild
           className='w-full bg-sb-primary hover:bg-sb-primary-hover text-sb-text-primary border-0 justify-start'

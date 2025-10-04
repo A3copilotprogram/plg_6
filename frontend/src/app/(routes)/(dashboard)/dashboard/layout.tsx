@@ -38,11 +38,11 @@ import UserAccountMenu from '@/components/user-account-menu'
         <SidebarProvider>
           <AppSidebar displayName={displayName} />
           <SidebarInset>
-            <header className='flex h-16 shrink-0 items-center justify-between border-b border-sb-border px-4 bg-sb-surface'>
+            <header className='flex h-16 shrink-0 items-center justify-between border-b border-sb-border px-4 bg-sb-background'>
               <SidebarTrigger className='-ml-1 text-sb-text-primary hover:text-sb-primary-light transition-colors duration-200' />
               <UserAccountMenu displayName={displayName} />
             </header>
-            <div className='bg-sb-background min-h-[calc(100vh-4rem)]'>
+            <div className='bg-sb-content min-h-[calc(100vh-4rem)]'>
               {children}
             </div>
           </SidebarInset>

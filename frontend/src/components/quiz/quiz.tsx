@@ -29,7 +29,7 @@ export default async function QuizComponent({
   }
 
   return (
-    <div className='h-full flex flex-col bg-sb-background'>
+    <div className='h-full flex flex-col bg-sb-content'>
       <div className='min-h-screen p-6'>
         <div className='mx-auto max-w-7xl'>
           <QuizStatsPage courseId={course.id} />

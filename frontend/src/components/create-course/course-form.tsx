@@ -24,7 +24,7 @@ export function CourseForm() {
   return (
     <form action={formAction} className='space-y-6'>
       <div className='space-y-2'>
-        <Label htmlFor='name' className='text-white font-medium'>Project Title</Label>
+        <Label htmlFor='name' className='text-sb-text-primary font-medium'>Project Title</Label>
         <Input
           id='name'
           name='name'
@@ -35,7 +35,7 @@ export function CourseForm() {
       </div>
 
       <div className='space-y-2'>
-        <Label htmlFor='description' className='text-white font-medium'>Description</Label>
+        <Label htmlFor='description' className='text-sb-text-primary font-medium'>Description</Label>
         <Textarea
           id='description'
           name='description'
@@ -46,7 +46,7 @@ export function CourseForm() {
       </div>
 
       <div className='space-y-2'>
-        <Label className='text-white font-medium'>Upload Documents</Label>
+        <Label className='text-sb-text-primary font-medium'>Upload Documents</Label>
         <div className='border-2 border-dashed border-sb-border rounded-lg p-8 text-center bg-sb-surface-hover hover:border-sb-primary-light hover:bg-sb-surface-hover/80 transition-colors cursor-pointer'>
           <div className='flex flex-col items-center gap-4'>
             <Cloud className='h-12 w-12 text-sb-text-secondary' />

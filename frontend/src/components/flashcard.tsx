@@ -54,7 +54,7 @@ export default function Flashcard({courseId,}) {
         </Button>
       </div>
       {cards.length > 0 ? (
-        <div className="flex flex-col items-center gap-4 bg-sb-background min-h-[400px] justify-center">
+        <div className="flex flex-col items-center gap-4 bg-sb-content min-h-[400px] justify-center">
           <div className="w-[70%] h-40 relative perspective-1000">
             <AnimatePresence>
               <motion.div

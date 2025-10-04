@@ -79,7 +79,7 @@ export default function ProjectSettings() {
   }
 
   return (
-    <div className='p-6 bg-sb-surface text-sb-text-primary'>
+    <div className='p-6 bg-sb-background text-sb-text-primary'>
         <h1 className='text-xl font-semibold mb-6 text-sb-text-primary'>Project Settings</h1>
 
       {course && (
