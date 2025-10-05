@@ -37,9 +37,12 @@ export default async function QuizAttempts({courseId}: {courseId: string}) {
       </h2>
       <div className='space-y-4'>
         {result.data.map((attempt, idx) => (
-          <Link href={`/dashboard/courses/${courseId}/quiz-session/${attempt.id}`} className="p-4">
+          <Link
+            key={attempt.id}
+            href={`/dashboard/courses/${courseId}/quiz-session/${attempt.id}`}
+            className="p-4"
+          >
             <div
-              key={attempt.id}
               className='flex items-center justify-between rounded-2xl border border-stone-200 bg-stone-50 p-4 transition-colors hover:bg-stone-50 h-[74px]'
             >
               <div className='flex items-center gap-6'>

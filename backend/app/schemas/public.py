@@ -196,10 +196,12 @@ class QuizSessionPublicWithResults(QuizSessionPublicWithQuizzes):
     results: list[QuizAttemptPublic] = Field(default_factory=list)
 
 
-class ChatPublic(QuizSessionPublic):
+class ChatPublic(PydanticBase):
+    """Public schema for Chat message entries (no quiz fields)."""
+
     id: uuid.UUID
-    message: str
     course_id: uuid.UUID
+    message: str | None = None
     is_system: bool
     created_at: datetime
     updated_at: datetime

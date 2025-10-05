@@ -28,7 +28,7 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning className='light' style={{colorScheme: 'light'}}>
       <body className={`${dmSans.variable} ${dmSansMono.variable} antialiased`}>
         <ThemeProvider attribute='class' defaultTheme='light' enableSystem>
           <main>{children}</main>

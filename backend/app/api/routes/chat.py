@@ -1,6 +1,7 @@
 import uuid
 from collections.abc import AsyncGenerator
 
+import logging
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -11,6 +12,7 @@ from app.services.chat_service import handle_continuation, handle_regular_questi
 from app.services.chat_db import verify_course_access, get_all_messages, create_greeting_if_needed
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+logger = logging.getLogger(__name__)
 
 
 class ChatMessage(BaseModel):
@@ -79,6 +81,13 @@ async def stream_chat(
     Returns:
         Streaming response of AI-generated content
     """
+    logger.info(
+        "[API] /chat/%s/stream | continue=%s | user_id=%s | preview=%s",
+        str(course_id),
+        chat.continue_response,
+        str(current_user.id),
+        chat.message[:120],
+    )
     return StreamingResponse(
         generate_chat_response(
             chat.message,
