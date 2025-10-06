@@ -15,7 +15,7 @@ from app.api.deps import SessionDep
 from app.api.routes.documents import async_openai_client
 from app.core.config import settings
 from app.models.podcast import Podcast
-from app.prompts.podcast import dialogue_prompt, presentation_prompt
+from app.prompts.podcast import dialogue_prompt, presentation_prompt, get_tts_instructions
 from app.services.rag_service import get_question_embedding, retrieve_relevant_context
 
 logger = logging.getLogger(__name__)
@@ -191,7 +191,7 @@ async def generate_podcast_for_course(
     if mode == "presentation":
         # Single narrator monologue (no role tags)
         monologue = await generate_presentation_transcript(context, f"{title} (Presentation Mode)")
-        audio_bytes = await _tts_to_bytes(monologue, narrator_voice)
+        audio_bytes = await _tts_to_bytes(monologue, narrator_voice, role="narrator", mode="presentation")
         transcript = monologue
     else:
         # Build alternating-speaker audio with different voices using structured turns
@@ -206,7 +206,7 @@ async def generate_podcast_for_course(
             try:
                 for t in turns:
                     voice = teacher_voice if t["role"] == "teacher" else student_voice
-                    path = await _tts_to_temp_file(t["text"], voice)
+                    path = await _tts_to_temp_file(t["text"], voice, role=t["role"], mode="dialogue")
                     temp_files.append(path)
                 audio_bytes = _concat_files(temp_files)
             finally:
@@ -274,15 +274,17 @@ def _parse_dialog_segments(transcript: str) -> list[tuple[str, str]]:
     return [(s, t) for s, t in segments if t]
 
 
-async def _tts_to_temp_file(text: str, voice: str) -> str:
+async def _tts_to_temp_file(text: str, voice: str, role: str = "teacher", mode: str = "dialogue") -> str:
     with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
         tmp_path = tmp.name
     try:
         safe_voice = _sanitize_voice(voice, settings.PODCAST_TEACHER_VOICE)
+        instructions = get_tts_instructions(role, mode)
         async with async_openai_client.audio.speech.with_streaming_response.create(
             model="gpt-4o-mini-tts",
             voice=safe_voice,
             input=text,
+            instructions=instructions,
         ) as response:
             await response.stream_to_file(tmp_path)
         return tmp_path
@@ -295,15 +297,17 @@ async def _tts_to_temp_file(text: str, voice: str) -> str:
         raise HTTPException(status_code=500, detail=f"TTS segment failed: {e}")
 
 
-async def _tts_to_bytes(text: str, voice: str) -> bytes:
+async def _tts_to_bytes(text: str, voice: str, role: str = "teacher", mode: str = "dialogue") -> bytes:
     with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
         tmp_path = tmp.name
     try:
         safe_voice = _sanitize_voice(voice, settings.PODCAST_TEACHER_VOICE)
+        instructions = get_tts_instructions(role, mode)
         async with async_openai_client.audio.speech.with_streaming_response.create(
             model="gpt-4o-mini-tts",
             voice=safe_voice,
             input=text,
+            instructions=instructions,
         ) as response:
             await response.stream_to_file(tmp_path)
         with open(tmp_path, 'rb') as f:
