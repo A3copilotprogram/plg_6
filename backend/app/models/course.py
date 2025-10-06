@@ -37,7 +37,7 @@ class Course(CourseBase, table=True):
         back_populates="course",
         sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
-    chats: list["Chat"] = Relationship(back_populates="course")
+    chats: list["Chat"] = Relationship(back_populates="course")  # noqa: F821 # type: ignore
     podcasts: list["Podcast"] = Relationship(
         back_populates="course",
         sa_relationship_kwargs={
@@ -55,6 +55,10 @@ class Course(CourseBase, table=True):
         default_factory=lambda: datetime.now(timezone.utc),
         sa_column_kwargs={"server_default": text("CURRENT_TIMESTAMP")},
         index=True,
+    )
+    quiz_sessions: list["QuizSession"] = Relationship(  # noqa: F821 # type: ignore
+        back_populates="course",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
 
 
