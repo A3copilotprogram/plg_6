@@ -97,6 +97,8 @@ export const zDocumentStatus = z.enum([
 export const zDocumentPublic = z.object({
     id: z.uuid(),
     course_id: z.uuid(),
+    title: z.string(),
+    filename: z.string(),
     updated_at: z.iso.datetime(),
     created_at: z.iso.datetime(),
     status: zDocumentStatus
@@ -179,8 +181,6 @@ export const zModeEnum = z.enum([
  * GeneratePodcastRequest
  * Request body for generating a podcast for a course.
  *
- * Kept in `internal` because it's an input/request schema rather than a
- * public response model.
  */
 export const zGeneratePodcastRequest = z.object({
     title: z.string(),
@@ -1109,6 +1109,12 @@ export const zDeleteApiV1PodcastsByPodcastIdData = z.object({
     }),
     query: z.optional(z.never())
 });
+
+/**
+ * Response Podcasts-Delete Podcast
+ * Successful Response
+ */
+export const zDeleteApiV1PodcastsByPodcastIdResponse = z.record(z.string(), z.string());
 
 export const zGetApiV1PodcastsByPodcastIdData = z.object({
     body: z.optional(z.never()),

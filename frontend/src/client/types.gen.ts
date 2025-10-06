@@ -251,6 +251,14 @@ export type DocumentPublic = {
      */
     course_id: string;
     /**
+     * Title
+     */
+    title: string;
+    /**
+     * Filename
+     */
+    filename: string;
+    /**
      * Updated At
      */
     updated_at: string;
@@ -270,8 +278,6 @@ export type DocumentStatus = 'pending' | 'processing' | 'completed' | 'failed';
  * GeneratePodcastRequest
  * Request body for generating a podcast for a course.
  *
- * Kept in `internal` because it's an input/request schema rather than a
- * public response model.
  */
 export type GeneratePodcastRequest = {
     /**
@@ -2167,8 +2173,12 @@ export type DeleteApiV1PodcastsByPodcastIdResponses = {
      * Response Podcasts-Delete Podcast
      * Successful Response
      */
-    200: unknown;
+    200: {
+        [key: string]: string;
+    };
 };
+
+export type DeleteApiV1PodcastsByPodcastIdResponse = DeleteApiV1PodcastsByPodcastIdResponses[keyof DeleteApiV1PodcastsByPodcastIdResponses];
 
 export type GetApiV1PodcastsByPodcastIdData = {
     body?: never;

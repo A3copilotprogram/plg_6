@@ -385,6 +385,14 @@ export const DocumentPublicSchema = {
             format: 'uuid',
             title: 'Course Id'
         },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        filename: {
+            type: 'string',
+            title: 'Filename'
+        },
         updated_at: {
             type: 'string',
             format: 'date-time',
@@ -400,7 +408,7 @@ export const DocumentPublicSchema = {
         }
     },
     type: 'object',
-    required: ['id', 'course_id', 'updated_at', 'created_at', 'status'],
+    required: ['id', 'course_id', 'title', 'filename', 'updated_at', 'created_at', 'status'],
     title: 'DocumentPublic'
 } as const;
 
@@ -484,9 +492,7 @@ export const GeneratePodcastRequestSchema = {
     required: ['title'],
     title: 'GeneratePodcastRequest',
     description: `Request body for generating a podcast for a course.
-
-Kept in \`internal\` because it's an input/request schema rather than a
-public response model.`
+    `
 } as const;
 
 export const HTTPValidationErrorSchema = {
