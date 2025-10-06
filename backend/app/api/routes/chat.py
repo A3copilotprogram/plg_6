@@ -21,6 +21,7 @@ async def generate_chat_response(
     session: SessionDep,
     current_user: CurrentUser,
     continue_response: bool = False,
+    skip_cache: bool = False,
 ) -> AsyncGenerator[str, None]:
     """
     Main chat response generator that delegates to appropriate service handlers
@@ -33,7 +34,7 @@ async def generate_chat_response(
         else:
             # Delegate to regular question handler
             async for chunk in handle_regular_question(
-                question, course_id, session, current_user
+                question, course_id, session, current_user, skip_cache
             ):
                 yield chunk
 
@@ -75,6 +76,7 @@ async def stream_chat(
             session,
             current_user,
             chat.continue_response,
+            chat.skip_cache,
         ),
         media_type="text/plain",
         headers={
