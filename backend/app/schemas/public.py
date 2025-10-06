@@ -38,6 +38,8 @@ class DocumentStatus(str, Enum):
 class DocumentPublic(PydanticBase):
     id: uuid.UUID
     course_id: uuid.UUID
+    title: str
+    filename: str
     updated_at: datetime
     created_at: datetime
     status: DocumentStatus
@@ -197,12 +199,15 @@ class QuizSessionPublicWithResults(QuizSessionPublicWithQuizzes):
 
 
 class ChatPublic(PydanticBase):
+    """Public schema for Chat message entries (no quiz fields)."""
+
     id: uuid.UUID
-    message: str
     course_id: uuid.UUID
+    message: str | None = None
     is_system: bool
     created_at: datetime
     updated_at: datetime
+
 
 class ChatMessage(BaseModel):
     message: str
@@ -215,3 +220,24 @@ class ChatMessage(BaseModel):
                 "continue_response": False,
             }
         }
+
+
+# ----------------------------------------------------------------------
+# Podcast Schemas
+# ----------------------------------------------------------------------
+
+
+class PodcastPublic(PydanticBase):
+    id: uuid.UUID
+    course_id: uuid.UUID
+    title: str
+    transcript: str
+    audio_path: str
+    storage_backend: str
+    duration_seconds: float | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class PodcastsPublic(BaseModel):
+    data: list[PodcastPublic]

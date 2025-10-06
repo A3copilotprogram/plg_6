@@ -11,7 +11,7 @@ import {Label} from '@/components/ui/label'
 import {Textarea} from '@/components/ui/textarea'
 
 import {CourseWithDocuments} from '@/client'
-import {getCourse} from '@/lib/courses'
+import {getCourse} from '@/actions/courses'
 import {deleteDocument} from '@/actions/documents'
 import {IState} from '@/types/common'
 import UploadComponent from '@/components/upload-component'

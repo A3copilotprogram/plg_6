@@ -1,6 +1,7 @@
 """
 Chat response caching service
 """
+import logging
 import uuid
 import numpy as np
 from typing import Optional, Tuple, List
@@ -9,6 +10,8 @@ from sqlmodel import select
 from app.api.routes.documents import async_openai_client, EMBEDDING_MODEL
 from app.models.chat import Chat
 from app.api.deps import SessionDep
+
+logger = logging.getLogger(__name__)
 
 # Caching constants
 SIMILARITY_THRESHOLD = 0.85  # Minimum similarity for cache hit
@@ -74,7 +77,7 @@ async def check_cached_response(
                 return cached_response, cached_question
                 
         except Exception as e:
-            print(f"Error checking cache similarity: {e}")
+            logger.exception("[CACHE] Error checking cache similarity: %s", e)
             continue
     
     return None

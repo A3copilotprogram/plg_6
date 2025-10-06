@@ -93,6 +93,17 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_PASSWORD: str
 
+    # Podcast/Audio storage settings
+    PODCAST_STORAGE: Literal["local", "s3"] = "local"
+    PODCAST_LOCAL_DIR: str = "/app/podcasts"
+    AWS_ACCESS_KEY_ID: str | None = None
+    AWS_SECRET_ACCESS_KEY: str | None = None
+    AWS_REGION: str | None = None
+    S3_BUCKET_NAME: str | None = None
+    S3_PREFIX: str = "podcasts/"
+    PODCAST_TEACHER_VOICE: str = "coral"
+    PODCAST_STUDENT_VOICE: str = "alloy"
+
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":
             message = (

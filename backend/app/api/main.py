@@ -5,6 +5,7 @@ from app.api.routes import (
     courses,
     documents,
     items,
+    podcasts,
     login,
     private,
     quiz_sessions,
@@ -21,6 +22,7 @@ api_router.include_router(items.router)
 api_router.include_router(courses.router)
 api_router.include_router(chat.router)
 api_router.include_router(documents.router)
+api_router.include_router(podcasts.router)
 api_router.include_router(quiz_sessions.router)
 
 if settings.ENVIRONMENT == "local":

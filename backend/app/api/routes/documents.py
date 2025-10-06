@@ -4,6 +4,7 @@ import shutil
 import tempfile
 import uuid
 from asyncio.log import logger
+import logging
 from datetime import datetime, timezone
 from typing import Any
 
@@ -21,7 +22,7 @@ from app.models.common import Message
 from app.models.course import Course
 from app.models.document import Document
 from app.models.embeddings import Chunk
-from app.schemas.public import DocumentStatus
+from app.schemas.public import DocumentStatus, DocumentPublic
 from app.tasks import generate_quizzes_task
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -37,6 +38,7 @@ MAX_FILE_SIZE_MB = 25
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 
 pc = Pinecone(api_key=PINECONE_API_KEY, environment=PINECONE_ENV_NAME)
+log = logging.getLogger(__name__)
 
 task_status: dict[str, str] = {}
 
@@ -48,6 +50,12 @@ def ensure_index_exists():
     if pc.has_index(index_name):
         existing = pc.describe_index(index_name)
         if existing.dimension != EXPECTED_DIMENSION:
+            log.warning(
+                "[DOCS] Index dimension mismatch | name=%s | have=%s want=%s — recreating",
+                index_name,
+                existing.dimension,
+                EXPECTED_DIMENSION,
+            )
             pc.delete_index(index_name)
             pc.create_index(
                 name=index_name,
@@ -165,6 +173,7 @@ async def process_pdf_task(file_path: str, document_id: uuid.UUID, session: Sess
                 "id": embedding_uuid,
                 "values": embedding,
                 "metadata": {
+                    "course_id": str(document.course_id),
                     "document_id": str(document_id),
                     "chunk_id": str(record.id),
                     "text": record.text_content,
@@ -290,8 +299,8 @@ async def process_multiple_documents(
     return {"message": "Processing started for multiple files", "documents": results}
 
 
-@router.get("/{id}", response_model=Document)
-def read_document(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:
+@router.get("/{id}", response_model=DocumentPublic)
+def read_document(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> DocumentPublic:
     """Get a document by its ID, ensuring the user has permissions."""
     statement = (
         select(Document)
@@ -308,7 +317,7 @@ def read_document(session: SessionDep, current_user: CurrentUser, id: uuid.UUID)
             detail="Document not found or you do not have permission to access it.",
         )
 
-    return document
+    return DocumentPublic.model_validate(document)
 
 
 def delete_embeddings_task(document_id: uuid.UUID):
@@ -321,13 +330,13 @@ def delete_embeddings_task(document_id: uuid.UUID):
         logger.error(f"Failed to delete embeddings for document {document_id}: {e}")
 
 
-@router.delete("/{id}")
+@router.delete("/{id}", response_model=Message)
 def delete_document(
     session: SessionDep,
     current_user: CurrentUser,
     id: uuid.UUID,
     background_tasks: BackgroundTasks,
-) -> Any:
+) -> Message:
     """Delete a document by its ID, ensuring the user has permissions."""
 
     document = session.exec(

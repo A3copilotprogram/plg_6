@@ -3,6 +3,26 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from app.schemas.public import DifficultyLevel
+import uuid
+from enum import Enum
+
+
+
+class ModeEnum(str, Enum):
+    dialogue = "dialogue"
+    presentation = "presentation"
+
+
+class GeneratePodcastRequest(BaseModel):
+    """Request body for generating a podcast for a course.
+    """
+    title: str
+    mode: ModeEnum = ModeEnum.dialogue
+    topics: str | None = None
+    teacher_voice: str | None = None
+    student_voice: str | None = None
+    narrator_voice: str | None = None
+    document_ids: list[uuid.UUID] | None = None
 
 
 class PaginationParams(BaseModel):

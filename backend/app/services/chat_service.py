@@ -1,6 +1,7 @@
 """
 Main chat service that orchestrates all chat functionality
 """
+import logging
 import uuid
 from collections.abc import AsyncGenerator
 from typing import List
@@ -23,6 +24,8 @@ from app.services.chat_cache import check_cached_response
 from app.services.rag_service import get_question_embedding, retrieve_relevant_context
 from app.services.openai_service import stream_cached_response, generate_openai_response
 
+logger = logging.getLogger(__name__)
+
 
 async def handle_continuation(
     course_id: uuid.UUID,
@@ -37,6 +40,7 @@ async def handle_continuation(
     last_system_msg = get_last_system_message(course_id, session)
     
     if not last_system_msg or not last_system_msg.message:
+        logger.warning("[CHAT] No previous system message found to continue | course_id=%s", str(course_id))
         yield "Error: No previous response found to continue"
         return
     
@@ -124,6 +128,7 @@ async def handle_regular_question(
     context_str = await retrieve_relevant_context(question_embedding, course_id)
     
     if not context_str:
+        logger.warning("[CHAT] No relevant context found | course_id=%s", str(course_id))
         yield "Error: No relevant content found for this question"
         return
 
