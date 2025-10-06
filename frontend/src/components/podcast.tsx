@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from 'react'
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Trash2 } from 'lucide-react'
 import { getDocumentsByCourse } from '@/actions/documents'
 import { getPodcasts, generatePodcast, deletePodcast } from '@/actions/podcasts'
+import type { ModeEnum } from '@/client/types.gen'
 
 type Podcast = {
   id: string
@@ -208,7 +209,7 @@ export default function PodcastComponent({ courseId }: { courseId: string }) {
   const [isPending, startTransition] = useTransition()
   const [teacherVoice, setTeacherVoice] = useState('coral')
   const [studentVoice, setStudentVoice] = useState('alloy')
-  const [mode, setMode] = useState<'dialogue' | 'presentation'>('dialogue')
+  const [mode, setMode] = useState<ModeEnum>('dialogue')
   const [topics, setTopics] = useState('')
   const [documents, setDocuments] = useState<DocItem[]>([])
   const [selectedDocs, setSelectedDocs] = useState<string[]>([])
@@ -377,11 +378,11 @@ function VoiceSelect({ label, value, onChange }: { label: string; value: string;
     </label>
   )
 }
-function ModeSelect({ mode, onChange }: { mode: 'dialogue' | 'presentation'; onChange: (m: 'dialogue' | 'presentation') => void }) {
+function ModeSelect({ mode, onChange }: { mode: ModeEnum; onChange: (m: ModeEnum) => void }) {
   return (
     <label className="text-sm text-slate-700 flex items-center gap-2">
       <span>Mode</span>
-      <select className="border rounded px-2 py-1" value={mode} onChange={(e) => onChange(e.target.value as any)}>
+      <select className="border rounded px-2 py-1" value={mode} onChange={(e) => onChange(e.target.value as ModeEnum)}>
         <option value="dialogue">Dialogue (Teacher/Student)</option>
         <option value="presentation">Presentation (Narrator)</option>
       </select>

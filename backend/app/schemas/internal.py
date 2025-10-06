@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field
 from app.schemas.public import DifficultyLevel
 import uuid
 from enum import Enum
-from typing import Optional
 
 
 
