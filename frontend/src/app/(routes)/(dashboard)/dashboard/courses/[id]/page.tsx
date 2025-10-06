@@ -1,3 +1,4 @@
+import PodcastComponent from '@/components/podcast'
 import dynamic from 'next/dynamic'
 
 import {getCourse} from '@/actions/courses'
@@ -53,9 +54,7 @@ export default async function Page(props: {params: Promise<{id: string}>}) {
       </TabsContent>
 
         <TabsContent value='podcast' className='p-6'>
-          <div className='text-center text-slate-400 py-12'>
-            Podcast content will be displayed here
-          </div>
+          <PodcastComponent courseId={id} />
         </TabsContent>
       </Tabs>
     </>

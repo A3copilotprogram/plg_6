@@ -27,9 +27,10 @@ async def get_question_embedding(question: str) -> List[float]:
 
 
 async def retrieve_relevant_context(
-    question_embedding: List[float], 
+    question_embedding: List[float],
     course_id: uuid.UUID,
-    top_k: int = 5
+    top_k: int = 5,
+    document_ids: Optional[List[uuid.UUID]] = None,
 ) -> Optional[str]:
     """
     Retrieve relevant context from course documents using vector similarity
@@ -58,9 +59,12 @@ async def retrieve_relevant_context(
 
         # Query Pinecone for relevant chunks
         index = pc.Index(index_name)
+        pine_filter: dict = {"course_id": {"$eq": str(course_id)}}
+        if document_ids:
+            pine_filter["document_id"] = {"$in": [str(d) for d in document_ids]}
         query_result = index.query(
             vector=question_embedding,
-            filter={"course_id": {"$eq": str(course_id)}},
+            filter=pine_filter,
             top_k=top_k,
             include_metadata=True,
         )

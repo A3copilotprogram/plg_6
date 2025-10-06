@@ -1,4 +1,5 @@
 from .chat import Chat  # noqa: F401
+from .podcast import Podcast  # noqa: F401
 from .common import *  # noqa: F403, if you have base mixins here
 from .course import Course  # noqa: F401
 from .document import Document  # noqa: F401

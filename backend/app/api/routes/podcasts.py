@@ -1,0 +1,151 @@
+import os
+import uuid
+from typing import Any, Optional, List
+
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse, JSONResponse
+from pydantic import BaseModel
+
+from app.api.deps import CurrentUser, SessionDep
+from sqlmodel import select
+from sqlalchemy.orm import selectinload
+from app.core.config import settings
+from app.models.podcast import Podcast
+from app.schemas.public import PodcastPublic, PodcastsPublic
+from app.services.podcast_service import generate_podcast_for_course
+
+router = APIRouter(prefix="/podcasts", tags=["podcasts"])
+
+
+@router.get("/{course_id}", response_model=PodcastsPublic)
+def list_podcasts(course_id: uuid.UUID, session: SessionDep, current_user: CurrentUser) -> Any:
+    pods = session.exec(select(Podcast).where(Podcast.course_id == course_id)).all()
+    return PodcastsPublic(data=[PodcastPublic.model_validate(p) for p in pods])
+
+
+class GeneratePodcastRequest(BaseModel):
+    title: Optional[str] = None
+    mode: Optional[str] = None  # 'dialogue' | 'presentation'
+    topics: Optional[str] = None
+    teacher_voice: Optional[str] = None
+    student_voice: Optional[str] = None
+    narrator_voice: Optional[str] = None
+    document_ids: Optional[List[uuid.UUID]] = None
+
+
+@router.post("/{course_id}/generate", response_model=PodcastPublic)
+async def generate_podcast(
+    course_id: uuid.UUID,
+    session: SessionDep,
+    current_user: CurrentUser,
+    body: GeneratePodcastRequest | None = None,
+) -> Any:
+    if not body or not body.title or not body.title.strip():
+        raise HTTPException(status_code=422, detail="Title is required")
+    title = body.title.strip()
+    mode = (body.mode or "dialogue") if body else "dialogue"
+    topics = body.topics if body else None
+    teacher_voice = body.teacher_voice if body and body.teacher_voice else settings.PODCAST_TEACHER_VOICE
+    student_voice = body.student_voice if body and body.student_voice else settings.PODCAST_STUDENT_VOICE
+    narrator_voice = body.narrator_voice if body and body.narrator_voice else settings.PODCAST_TEACHER_VOICE
+    doc_ids = body.document_ids if body and body.document_ids else None
+    podcast = await generate_podcast_for_course(
+        session,
+        course_id,
+        title,
+        teacher_voice,
+        student_voice,
+        narrator_voice,
+        mode,
+        topics,
+        doc_ids,
+    )
+    return PodcastPublic.model_validate(podcast)
+
+
+@router.get("/by-id/{podcast_id}", response_model=PodcastPublic)
+def get_podcast(podcast_id: uuid.UUID, session: SessionDep, current_user: CurrentUser) -> Any:
+    pod = session.get(Podcast, podcast_id)
+    if not pod:
+        raise HTTPException(status_code=404, detail="Podcast not found")
+    return PodcastPublic.model_validate(pod)
+
+
+@router.get("/by-id/{podcast_id}/audio")
+def stream_audio(podcast_id: uuid.UUID, session: SessionDep, current_user: CurrentUser):
+    pod = session.get(Podcast, podcast_id)
+    if not pod:
+        raise HTTPException(status_code=404, detail="Podcast not found")
+    if pod.storage_backend == "local":
+        file_path = pod.audio_path
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="Audio file missing")
+        def iterfile():
+            with open(file_path, "rb") as f:
+                while chunk := f.read(8192):
+                    yield chunk
+        return StreamingResponse(iterfile(), media_type="audio/mpeg")
+    else:
+        # For S3, return a presigned URL to let client fetch directly
+        try:
+            import boto3
+            s3 = boto3.client(
+                "s3",
+                aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                region_name=settings.AWS_REGION,
+            )
+            bucket = settings.S3_BUCKET_NAME
+            if not bucket:
+                raise ValueError("S3 bucket not configured")
+            key = pod.audio_path.replace(f"s3://{bucket}/", "") if pod.audio_path.startswith("s3://") else pod.audio_path
+            url = s3.generate_presigned_url(
+                ClientMethod='get_object',
+                Params={'Bucket': bucket, 'Key': key},
+                ExpiresIn=3600,
+            )
+            return JSONResponse({"url": url})
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to generate S3 URL: {e}")
+
+
+@router.delete("/by-id/{podcast_id}")
+def delete_podcast(podcast_id: uuid.UUID, session: SessionDep, current_user: CurrentUser) -> Any:
+    pod = session.exec(
+        select(Podcast).where(Podcast.id == podcast_id).options(selectinload(Podcast.course))  # type: ignore
+    ).first()
+
+    if not pod:
+        raise HTTPException(status_code=404, detail="Podcast not found")
+
+    # Permission: owner or superuser
+    if not current_user.is_superuser and getattr(pod, "course", None) and pod.course.owner_id != current_user.id:  # type: ignore
+        raise HTTPException(status_code=403, detail="Not enough permissions to delete this podcast")
+
+    # Best-effort delete of underlying media
+    try:
+        if pod.storage_backend == "local" and pod.audio_path and os.path.exists(pod.audio_path):
+            try:
+                os.remove(pod.audio_path)
+            except Exception:
+                pass
+        elif pod.storage_backend == "s3" and pod.audio_path:
+            try:
+                import boto3
+                bucket = settings.S3_BUCKET_NAME
+                if bucket:
+                    key = pod.audio_path.replace(f"s3://{bucket}/", "") if pod.audio_path.startswith("s3://") else pod.audio_path
+                    s3 = boto3.client(
+                        "s3",
+                        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                        region_name=settings.AWS_REGION,
+                    )
+                    s3.delete_object(Bucket=bucket, Key=key)
+            except Exception:
+                # ignore media delete failures
+                pass
+    finally:
+        session.delete(pod)
+        session.commit()
+    return {"message": "Podcast deleted successfully"}

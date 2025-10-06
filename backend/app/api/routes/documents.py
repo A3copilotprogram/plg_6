@@ -311,6 +311,23 @@ async def process_multiple_documents(
     return {"message": "Processing started for multiple files", "documents": results}
 
 
+@router.get("/by-course/{course_id}")
+def list_documents_by_course(session: SessionDep, current_user: CurrentUser, course_id: uuid.UUID) -> Any:
+    """List documents for a course with basic fields."""
+    docs = session.exec(select(Document).where(Document.course_id == course_id)).all()
+    return [
+        {
+            "id": d.id,
+            "title": d.title,
+            "filename": d.filename,
+            "status": d.status.value if hasattr(d.status, 'value') else str(d.status),
+            "created_at": d.created_at,
+            "updated_at": d.updated_at,
+        }
+        for d in docs
+    ]
+
+
 @router.get("/{id}", response_model=Document)
 def read_document(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:
     """Get a document by its ID, ensuring the user has permissions."""

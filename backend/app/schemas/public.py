@@ -205,3 +205,24 @@ class ChatPublic(PydanticBase):
     is_system: bool
     created_at: datetime
     updated_at: datetime
+
+
+# ----------------------------------------------------------------------
+# Podcast Schemas
+# ----------------------------------------------------------------------
+
+
+class PodcastPublic(PydanticBase):
+    id: uuid.UUID
+    course_id: uuid.UUID
+    title: str
+    transcript: str
+    audio_path: str
+    storage_backend: str
+    duration_seconds: float | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class PodcastsPublic(BaseModel):
+    data: list[PodcastPublic]
