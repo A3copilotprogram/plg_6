@@ -79,17 +79,35 @@ def get_last_system_message(
 def save_user_message(
     message: str, 
     course_id: uuid.UUID, 
-    session: SessionDep
+    session: SessionDep,
+    embedding: Optional[List[float]] = None
 ) -> Chat:
-    """Save a user message to the database"""
+    """
+    Save a user message to the database with optional embedding
+    
+    Args:
+        message: The user's message text
+        course_id: Course UUID
+        session: Database session
+        embedding: Optional pre-computed embedding vector (1536 dimensions)
+        
+    Returns:
+        Saved Chat object with embedding stored
+    """
     user_chat_data = ChatCreate(
         message=message,
         is_system=False,
         course_id=course_id,
     )
     user_msg = Chat(**user_chat_data.model_dump())
+    
+    # Store the embedding if provided
+    if embedding:
+        user_msg.embedding = embedding
+    
     session.add(user_msg)
     session.commit()
+    session.refresh(user_msg)
     return user_msg
 
 
