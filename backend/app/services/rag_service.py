@@ -16,13 +16,11 @@ logger = logging.getLogger(__name__)
 
 async def get_question_embedding(question: str) -> List[float]:
     """Generate embedding for a question"""
-    logger.info("[RAG] Generating question embedding | model=%s | question_preview=%s", EMBEDDING_MODEL, question[:120])
     embed_resp = await async_openai_client.embeddings.create(
         input=[question],
         model=EMBEDDING_MODEL,
     )
     embedding = embed_resp.data[0].embedding
-    logger.debug("[RAG] Embedding generated | dims=%d | first5=%s", len(embedding), embedding[:5])
     return embedding
 
 
@@ -46,14 +44,6 @@ async def retrieve_relevant_context(
     try:
         # Ensure index exists and log setup
         has_idx = pc.has_index(index_name)
-        logger.info(
-            "[RAG] Query Pinecone | index=%s exists=%s | filter.course_id=%s | top_k=%d | embed_dims=%d",
-            index_name,
-            has_idx,
-            str(course_id),
-            top_k,
-            len(question_embedding),
-        )
         if not has_idx:
             logger.warning("[RAG] Index %s does not exist before query", index_name)
 
@@ -71,7 +61,6 @@ async def retrieve_relevant_context(
 
         # Pinecone may return either an object or dict-like structure
         matches = query_result.get("matches", []) if hasattr(query_result, "get") else getattr(query_result, "matches", [])
-        logger.info("[RAG] Pinecone returned %d matches", len(matches) if matches is not None else 0)
 
         contexts: List[str] = []
         if matches:
@@ -83,14 +72,6 @@ async def retrieve_relevant_context(
                 cid = metadata.get("course_id") if isinstance(metadata, dict) else None
                 did = metadata.get("document_id") if isinstance(metadata, dict) else None
                 contexts.append(text) if text else None
-                logger.debug(
-                    "[RAG] match[%d] | score=%s | course_id=%s | document_id=%s | text_len=%s",
-                    i,
-                    f"{score:.4f}" if isinstance(score, (int, float)) else str(score),
-                    str(cid),
-                    str(did),
-                    len(text) if isinstance(text, str) else 0,
-                )
 
         if not contexts:
             # Additional debug: try an unfiltered query to inspect stored metadata
@@ -101,15 +82,9 @@ async def retrieve_relevant_context(
                     include_metadata=True,
                 )
                 probe_matches = probe.get("matches", []) if hasattr(probe, "get") else getattr(probe, "matches", [])
-                logger.info("[RAG] Probe (no-filter) returned %d matches", len(probe_matches) if probe_matches is not None else 0)
                 if probe_matches:
                     pm = probe_matches[0]
                     pmeta = pm.get("metadata") if isinstance(pm, dict) else getattr(pm, "metadata", {})
-                    logger.info(
-                        "[RAG] Probe match metadata keys=%s | has_course_id=%s",
-                        list(pmeta.keys()) if isinstance(pmeta, dict) else str(type(pmeta)),
-                        isinstance(pmeta, dict) and ("course_id" in pmeta),
-                    )
                     # Fallback: if vectors exist but filter produced none, try manual filtering in code
                     # to guard against filter-shape mismatches across SDK versions
                     fallback = index.query(
@@ -127,7 +102,6 @@ async def retrieve_relevant_context(
                             fb_contexts.append(text)
                     if fb_contexts:
                         merged_fb = "\n\n".join(fb_contexts[:top_k])
-                        logger.info("[RAG] Fallback produced %d contexts after manual course_id filter", len(fb_contexts))
                         return merged_fb
             except Exception as pe:
                 logger.exception("[RAG] Probe query failed: %s", pe)
@@ -139,7 +113,6 @@ async def retrieve_relevant_context(
             return None
 
         merged = "\n\n".join(contexts)
-        logger.info("[RAG] Aggregated context length=%d", len(merged))
         return merged
 
     except Exception as e:

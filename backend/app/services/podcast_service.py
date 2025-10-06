@@ -239,12 +239,6 @@ async def generate_podcast_for_course(
     session.add(podcast)
     session.commit()
     session.refresh(podcast)
-    logger.info(
-        "[PODCAST] Generated | id=%s | storage=%s | audio_path=%s",
-        str(podcast.id),
-        storage,
-        audio_path,
-    )
     return podcast
 
 

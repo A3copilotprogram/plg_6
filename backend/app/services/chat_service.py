@@ -35,11 +35,6 @@ async def handle_continuation(
     """Handle response continuation logic"""
     # Verify access
     course = verify_course_access(course_id, session, current_user)
-    logger.info(
-        "[CHAT] Continuation requested | course_id=%s | user_id=%s",
-        str(course_id),
-        str(current_user.id),
-    )
     
     # Get the last system message to continue from
     last_system_msg = get_last_system_message(course_id, session)
@@ -106,16 +101,9 @@ async def handle_regular_question(
     """Handle regular question processing with RAG and caching"""
     # Verify access
     course = verify_course_access(course_id, session, current_user)
-    logger.info(
-        "[CHAT] Question received | course_id=%s | user_id=%s | question_preview=%s",
-        str(course_id),
-        str(current_user.id),
-        question[:120],
-    )
     
     # Generate embedding for the question
     question_embedding = await get_question_embedding(question)
-    logger.debug("[CHAT] Question embedding dims=%d", len(question_embedding))
 
     # Check for cached similar response first
     cached_result = await check_cached_response(
@@ -124,7 +112,6 @@ async def handle_regular_question(
     
     if cached_result:
         cached_response, _ = cached_result
-        logger.info("[CHAT] Cache hit for similar question | course_id=%s", str(course_id))
         
         # Save user message
         save_user_message(question, course_id, session)
@@ -147,7 +134,6 @@ async def handle_regular_question(
 
     # Get recent chat history for conversational context
     recent_messages = get_recent_messages(course_id, session)
-    logger.debug("[CHAT] Recent messages count=%d", len(recent_messages))
     
     # Filter history based on token limits
     conversation_history = filter_chat_history(
@@ -185,4 +171,3 @@ async def handle_regular_question(
 
     # Save system message
     save_system_message(full_response, course_id, session)
-    logger.info("[CHAT] Response saved | chars=%d | course_id=%s", len(full_response), str(course_id))

@@ -60,7 +60,6 @@ async def check_cached_response(
             recent_pairs[i+1].message):
             pairs.append((recent_pairs[i].message, recent_pairs[i+1].message))
     
-    logger.debug("[CACHE] Checking %d recent QA pairs for similarity", len(pairs))
     # Check similarity with recent questions
     for cached_question, cached_response in pairs[:MAX_CACHE_ENTRIES]:
         try:
@@ -75,11 +74,6 @@ async def check_cached_response(
             similarity = cosine_similarity(question_embedding, cached_embedding)
             
             if similarity >= SIMILARITY_THRESHOLD:
-                logger.info(
-                    "[CACHE] Cache hit | similarity=%.3f | threshold=%.3f",
-                    similarity,
-                    SIMILARITY_THRESHOLD,
-                )
                 return cached_response, cached_question
                 
         except Exception as e:
