@@ -18,8 +18,8 @@ router = APIRouter(prefix="/podcasts", tags=["podcasts"])
 
 
 @router.get("/course/{course_id}", response_model=PodcastsPublic)
-def list_podcasts(course_id: uuid.UUID, session: SessionDep, _current_user: CurrentUser) -> PodcastsPublic:
-    pods = session.exec(select(Podcast).where(Podcast.course_id == course_id)).all()
+def list_podcasts(course_id: uuid.UUID, session: SessionDep, _current_user: CurrentUser, skip: int = 0, limit: int = 50) -> PodcastsPublic:
+    pods = session.exec(select(Podcast).where(Podcast.course_id == course_id).offset(skip).limit(limit)).all()
     return PodcastsPublic(data=[PodcastPublic.model_validate(p) for p in pods])
 
 
