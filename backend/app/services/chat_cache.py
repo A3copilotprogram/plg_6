@@ -38,36 +38,36 @@ async def check_cached_response(
 ) -> Optional[Tuple[str, str]]:
     """
     Check if a similar question has been asked before and return cached response
+    Uses stored embeddings for ultra-fast similarity checks (no API calls!)
     Returns: (cached_response, original_question) or None if no similar question found
     """
-    # Get recent user questions with their system responses for this course
+    # Get recent user questions with embeddings and their system responses for this course
     recent_pairs = session.exec(
         select(Chat)
         .where(Chat.course_id == course_id)
+        .where(Chat.embedding.isnot(None))  # Only get messages with stored embeddings
         .order_by(Chat.created_at.desc())
         .limit(MAX_CACHE_ENTRIES * 2)  # Get more to find pairs
     ).all()
     
-    # Group messages into question-answer pairs
-    pairs = []
+    # Group messages into question-answer pairs with embeddings
+    pairs_with_embeddings = []
     for i in range(len(recent_pairs) - 1):
         if (not recent_pairs[i].is_system and 
             recent_pairs[i+1].is_system and
             recent_pairs[i].message and 
-            recent_pairs[i+1].message):
-            pairs.append((recent_pairs[i].message, recent_pairs[i+1].message))
+            recent_pairs[i+1].message and
+            recent_pairs[i].embedding):  # Ensure embedding exists
+            pairs_with_embeddings.append((
+                recent_pairs[i].message, 
+                recent_pairs[i+1].message,
+                recent_pairs[i].embedding
+            ))
     
-    # Check similarity with recent questions
-    for cached_question, cached_response in pairs[:MAX_CACHE_ENTRIES]:
+    # Check similarity with recent questions using stored embeddings
+    for cached_question, cached_response, cached_embedding in pairs_with_embeddings[:MAX_CACHE_ENTRIES]:
         try:
-            # Generate embedding for cached question
-            embed_resp = await async_openai_client.embeddings.create(
-                input=[cached_question],
-                model=EMBEDDING_MODEL,
-            )
-            cached_embedding = embed_resp.data[0].embedding
-            
-            # Calculate similarity
+            # Calculate similarity using stored embedding (no API call!)
             similarity = cosine_similarity(question_embedding, cached_embedding)
             
             if similarity >= SIMILARITY_THRESHOLD:

@@ -1,8 +1,10 @@
 import uuid
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import Column, DateTime, event, text
 from sqlmodel import Field, Relationship, SQLModel
+from pgvector.sqlalchemy import Vector 
 
 
 class ChatBase(SQLModel):
@@ -12,6 +14,7 @@ class ChatBase(SQLModel):
     sa_column=Column(DateTime(timezone=True), server_default=text("now()"), nullable=False)
   )
   updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+  embedding: Optional[list] = Field(default=None, sa_type=Vector(1536))
 
 # Properties to receive on chat creation
 class ChatCreate(SQLModel):  # Don't inherit from ChatBase to avoid conflicts

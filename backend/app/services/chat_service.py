@@ -93,6 +93,7 @@ async def handle_regular_question(
     course_id: uuid.UUID,
     session: SessionDep,
     current_user: CurrentUser,
+    skip_cache: bool = False,
 ) -> AsyncGenerator[str, None]:
     """Handle regular question processing with RAG and caching"""
     # Verify access
@@ -101,24 +102,25 @@ async def handle_regular_question(
     # Generate embedding for the question
     question_embedding = await get_question_embedding(question)
 
-    # Check for cached similar response first
-    cached_result = await check_cached_response(
-        question, question_embedding, course_id, session
-    )
-    
-    if cached_result:
-        cached_response, _ = cached_result
+    # Check for cached similar response first (unless skip_cache is True)
+    if not skip_cache:
+        cached_result = await check_cached_response(
+            question, question_embedding, course_id, session
+        )
         
-        # Save user message
-        save_user_message(question, course_id, session)
-        
-        # Stream cached response directly (without similarity note for cleaner UX)
-        async for chunk in stream_cached_response(cached_response):
-            yield chunk
-        
-        # Save system message with cached response
-        save_system_message(cached_response, course_id, session)
-        return
+        if cached_result:
+            cached_response, _ = cached_result
+            
+            # Save user message WITH embedding for future cache lookups
+            save_user_message(question, course_id, session, embedding=question_embedding)
+            
+            # Stream cached response directly (without similarity note for cleaner UX)
+            async for chunk in stream_cached_response(cached_response):
+                yield chunk
+            
+            # Save system message with cached response
+            save_system_message(cached_response, course_id, session)
+            return
 
     # Retrieve relevant context from documents
     context_str = await retrieve_relevant_context(question_embedding, course_id)
@@ -137,8 +139,8 @@ async def handle_regular_question(
         context_str
     )
 
-    # Save user message
-    save_user_message(question, course_id, session)
+    # Save user message WITH embedding for future cache lookups
+    save_user_message(question, course_id, session, embedding=question_embedding)
 
     # Build messages with filtered conversation history
     messages = [

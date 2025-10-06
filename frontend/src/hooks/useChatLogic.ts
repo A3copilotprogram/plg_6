@@ -56,7 +56,12 @@ export function useChatLogic(courseId: string): ChatHookReturn {
       })
   }, [courseId])
 
-  const handleChatRequest = async (message: string, isContinuation: boolean = false, targetMessageId?: string) => {
+  const handleChatRequest = async (
+    message: string, 
+    isContinuation: boolean = false, 
+    targetMessageId?: string,
+    skipCache: boolean = false
+  ) => {
     setIsLoading(true)
     setLoadingState('thinking')
     
@@ -99,7 +104,7 @@ export function useChatLogic(courseId: string): ChatHookReturn {
     }
 
     try {
-      const stream = await createChatStream(courseId, message, isContinuation)
+      const stream = await createChatStream(courseId, message, isContinuation, skipCache)
 
       if (!stream) {
         throw new Error('No response stream received from server.')
@@ -222,7 +227,8 @@ export function useChatLogic(courseId: string): ChatHookReturn {
           await new Promise(resolve => setTimeout(resolve, 500))
           setLoadingState('generating')
 
-          const stream = await createChatStream(courseId, userMessage.message, false)
+          // Pass skipCache=true to bypass cache and force fresh generation
+          const stream = await createChatStream(courseId, userMessage.message, false, true)
 
           if (!stream) {
             throw new Error('No response stream received from server.')

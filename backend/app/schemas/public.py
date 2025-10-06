@@ -207,11 +207,13 @@ class ChatPublic(PydanticBase):
 class ChatMessage(BaseModel):
     message: str
     continue_response: bool = False  # Flag to continue previous response
+    skip_cache: bool = False  # Flag to bypass cache for regeneration
 
     class Config:
         json_schema_extra = {
             "example": {
                 "message": "What is the main topic of the course?",
                 "continue_response": False,
+                "skip_cache": False,
             }
         }
