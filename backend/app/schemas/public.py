@@ -38,6 +38,8 @@ class DocumentStatus(str, Enum):
 class DocumentPublic(PydanticBase):
     id: uuid.UUID
     course_id: uuid.UUID
+    title: str
+    filename: str
     updated_at: datetime
     created_at: datetime
     status: DocumentStatus
