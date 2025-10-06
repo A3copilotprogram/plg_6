@@ -14,49 +14,69 @@ export async function GET(_req: NextRequest, context: ContextParams) {
   try {
     const { podcastId } = await context.params
     
+    // First, try to get the response without specifying responseType to detect the content type
     const response = await PodcastsService.getApiV1PodcastsByPodcastIdAudio({
       path: { podcast_id: podcastId },
       requestValidator: async () => {},
       responseValidator: async () => {},
-      responseType: 'stream',
     })
 
-    // Convert Node.js IncomingMessage to Web ReadableStream (same as chat)
-    const nodeStream = response.data as any
+    // Check if response is JSON (i.e S3) or binary (local)
+    const contentType = response.headers.get('content-type') || ''
+    
+    if (contentType.includes('application/json')) {
+      // S3 case: response contains {"url": "presigned_s3_url"}
+      const data = response.data as { url: string }
+      
+      // Redirect to the S3 URL
+      return NextResponse.redirect(data.url)
+    } else {
+      // Local case: response contains audio stream
+      // Now fetch stream with proper responseType
+      const streamResponse = await PodcastsService.getApiV1PodcastsByPodcastIdAudio({
+        path: { podcast_id: podcastId },
+        requestValidator: async () => {},
+        responseValidator: async () => {},
+        responseType: 'stream',
+      })
 
-    if (!nodeStream || typeof nodeStream.pipe !== 'function') {
-      throw new Error('Expected Node readable stream from PodcastsService')
-    }
+      // Convert Node.js IncomingMessage to Web ReadableStream (same as chat)
+      const nodeStream = streamResponse.data as any
 
-    const webStream = new ReadableStream({
-      start(controller) {
-        nodeStream.on('data', (chunk: Buffer) => {
-          // Convert Buffer to Uint8Array for Web ReadableStream
-          controller.enqueue(new Uint8Array(chunk))
-        })
-
-        nodeStream.on('end', () => {
-          controller.close()
-        })
-
-        nodeStream.on('error', (error: Error) => {
-          controller.error(error)
-        })
-      },
-
-      cancel() {
-        nodeStream.destroy()
+      if (!nodeStream || typeof nodeStream.pipe !== 'function') {
+        throw new Error('Expected Node readable stream from PodcastsService')
       }
-    })
 
-    return new Response(webStream, {
-      headers: {
-        'Content-Type': 'audio/mpeg',
-        'Cache-Control': 'no-cache',
-        'Accept-Ranges': 'bytes',
-        'X-Accel-Buffering': 'no',
-      },
-    })
+      const webStream = new ReadableStream({
+        start(controller) {
+          nodeStream.on('data', (chunk: Buffer) => {
+            // Convert Buffer to Uint8Array for Web ReadableStream
+            controller.enqueue(new Uint8Array(chunk))
+          })
+
+          nodeStream.on('end', () => {
+            controller.close()
+          })
+
+          nodeStream.on('error', (error: Error) => {
+            controller.error(error)
+          })
+        },
+
+        cancel() {
+          nodeStream.destroy()
+        }
+      })
+
+      return new Response(webStream, {
+        headers: {
+          'Content-Type': 'audio/mpeg',
+          'Cache-Control': 'no-cache',
+          'Accept-Ranges': 'bytes',
+          'X-Accel-Buffering': 'no',
+        },
+      })
+    }
   } catch (error) {
     // Log error in development for debugging
     if (process.env.NODE_ENV === 'development') {
