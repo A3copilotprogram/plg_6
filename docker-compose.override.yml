@@ -46,6 +46,7 @@ services:
       - default
 
   db:
+    image: pgvector/pgvector:pg17
     restart: "no"
     ports:
       - "5432:5432"
