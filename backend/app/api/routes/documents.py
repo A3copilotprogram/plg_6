@@ -22,7 +22,7 @@ from app.models.common import Message
 from app.models.course import Course
 from app.models.document import Document
 from app.models.embeddings import Chunk
-from app.schemas.public import DocumentStatus
+from app.schemas.public import DocumentStatus, DocumentPublic
 from app.tasks import generate_quizzes_task
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -311,25 +311,8 @@ async def process_multiple_documents(
     return {"message": "Processing started for multiple files", "documents": results}
 
 
-@router.get("/by-course/{course_id}")
-def list_documents_by_course(session: SessionDep, current_user: CurrentUser, course_id: uuid.UUID) -> Any:
-    """List documents for a course with basic fields."""
-    docs = session.exec(select(Document).where(Document.course_id == course_id)).all()
-    return [
-        {
-            "id": d.id,
-            "title": d.title,
-            "filename": d.filename,
-            "status": d.status.value if hasattr(d.status, 'value') else str(d.status),
-            "created_at": d.created_at,
-            "updated_at": d.updated_at,
-        }
-        for d in docs
-    ]
-
-
-@router.get("/{id}", response_model=Document)
-def read_document(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:
+@router.get("/{id}", response_model=DocumentPublic)
+def read_document(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> DocumentPublic:
     """Get a document by its ID, ensuring the user has permissions."""
     statement = (
         select(Document)
@@ -346,7 +329,7 @@ def read_document(session: SessionDep, current_user: CurrentUser, id: uuid.UUID)
             detail="Document not found or you do not have permission to access it.",
         )
 
-    return document
+    return DocumentPublic.model_validate(document)
 
 
 def delete_embeddings_task(document_id: uuid.UUID):
@@ -359,13 +342,13 @@ def delete_embeddings_task(document_id: uuid.UUID):
         logger.error(f"Failed to delete embeddings for document {document_id}: {e}")
 
 
-@router.delete("/{id}")
+@router.delete("/{id}", response_model=Message)
 def delete_document(
     session: SessionDep,
     current_user: CurrentUser,
     id: uuid.UUID,
     background_tasks: BackgroundTasks,
-) -> Any:
+) -> Message:
     """Delete a document by its ID, ensuring the user has permissions."""
 
     document = session.exec(

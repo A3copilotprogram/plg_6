@@ -178,10 +178,10 @@ def delete_course(
     return {"message": "Course deleted successfully"}
 
 
-@router.get("/{id}/documents", response_model=list[dict[str, Any]])
+@router.get("/{id}/documents", response_model=list[DocumentPublic])
 async def list_documents(
     id: str, session: SessionDep, skip: int = 0, limit: int = 100
-) -> list[dict[str, Any]]:
+) -> list[DocumentPublic]:
     """
     List documents for a specific course.
     """
@@ -189,16 +189,9 @@ async def list_documents(
         select(Document).where(Document.course_id == id).offset(skip).limit(limit)
     )
     documents = session.exec(statement).all()
-    return [
-        {
-            "id": str(doc.id),
-            "filename": doc.filename,
-            "chunk_count": doc.chunk_count,
-            "status": doc.status,
-            "updated_at": doc.updated_at.isoformat(),
-        }
-        for doc in documents
-    ]
+
+    # Use the public schema's from_attributes (ORM mode) to convert DB models
+    return [DocumentPublic.model_validate(doc) for doc in documents]
 
 
 @router.get("/{id}/quizzes", response_model=QuizzesPublic)
