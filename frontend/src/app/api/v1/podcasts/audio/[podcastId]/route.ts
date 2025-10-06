@@ -1,5 +1,6 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { PodcastsService } from '@/client'
+import { get } from '@/utils'
 
 interface ContextParams {
   params: Promise<{ podcastId: string }>
@@ -62,10 +63,23 @@ export async function GET(_req: NextRequest, context: ContextParams) {
       console.error('[PodcastAudio] Audio stream error:', error)
     }
     
-    return Response.json({ error: 'Failed to stream audio' }, { status: 500 })
+    const status: number = get(
+      error as Record<string, never>,
+      'response.status',
+      500,
+    )
+    const body: { detail: string } = get(
+      error as Record<string, never>,
+      'response.data.detail',
+      {
+        detail: 'Internal Server Error',
+      },
+    )
+    return NextResponse.json(body, { status })
   }
 }
 
 export const config = {
   runtime: 'nodejs',
+  maxDuration: 300,
 }
