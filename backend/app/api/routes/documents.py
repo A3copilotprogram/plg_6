@@ -37,7 +37,7 @@ MAX_FILES = 10
 MAX_FILE_SIZE_MB = 25
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 
-pc = Pinecone(api_key=PINECONE_API_KEY)
+pc = Pinecone(api_key=PINECONE_API_KEY, environment=PINECONE_ENV_NAME)
 log = logging.getLogger(__name__)
 
 task_status: dict[str, str] = {}
@@ -48,7 +48,6 @@ async_openai_client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def ensure_index_exists():
     """Ensure Pinecone index exists with the correct dimension, recreate if wrong."""
     if pc.has_index(index_name):
-        log.info("[DOCS] Pinecone index exists | name=%s", index_name)
         existing = pc.describe_index(index_name)
         if existing.dimension != EXPECTED_DIMENSION:
             log.warning(
@@ -65,7 +64,6 @@ def ensure_index_exists():
                 spec=ServerlessSpec(cloud="aws", region="us-east-1"),
             )
     else:
-        log.info("[DOCS] Creating Pinecone index | name=%s dim=%s", index_name, EXPECTED_DIMENSION)
         pc.create_index(
             name=index_name,
             dimension=EXPECTED_DIMENSION,
@@ -187,16 +185,6 @@ async def process_pdf_task(file_path: str, document_id: uuid.UUID, session: Sess
         session.commit()
 
         index = pc.Index(index_name)
-        log.info(
-            "[DOCS] Upserting vectors | index=%s | count=%d | course_id=%s | document_id=%s",
-            index_name,
-            len(vectors_to_upsert),
-            str(document.course_id),
-            str(document_id),
-        )
-        if vectors_to_upsert:
-            sample_meta = vectors_to_upsert[0].get("metadata", {})
-            log.info("[DOCS] Sample vector metadata keys=%s", list(sample_meta.keys()))
         index.upsert(vectors=vectors_to_upsert)
 
         document.updated_at = datetime.now(timezone.utc)
