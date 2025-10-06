@@ -107,28 +107,20 @@ export const ChatPublicSchema = {
             format: 'uuid',
             title: 'Course Id'
         },
-        total_submitted: {
-            type: 'integer',
-            title: 'Total Submitted'
-        },
-        total_correct: {
-            type: 'integer',
-            title: 'Total Correct'
-        },
-        score_percentage: {
+        message: {
             anyOf: [
                 {
-                    type: 'number'
+                    type: 'string'
                 },
                 {
                     type: 'null'
                 }
             ],
-            title: 'Score Percentage'
+            title: 'Message'
         },
-        is_completed: {
+        is_system: {
             type: 'boolean',
-            title: 'Is Completed'
+            title: 'Is System'
         },
         created_at: {
             type: 'string',
@@ -139,19 +131,12 @@ export const ChatPublicSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Updated At'
-        },
-        message: {
-            type: 'string',
-            title: 'Message'
-        },
-        is_system: {
-            type: 'boolean',
-            title: 'Is System'
         }
     },
     type: 'object',
-    required: ['id', 'course_id', 'total_submitted', 'total_correct', 'is_completed', 'created_at', 'updated_at', 'message', 'is_system'],
-    title: 'ChatPublic'
+    required: ['id', 'course_id', 'is_system', 'created_at', 'updated_at'],
+    title: 'ChatPublic',
+    description: 'Public schema for Chat message entries (no quiz fields).'
 } as const;
 
 export const CourseSchema = {
@@ -384,70 +369,6 @@ export const DifficultyLevelSchema = {
     title: 'DifficultyLevel'
 } as const;
 
-export const DocumentSchema = {
-    properties: {
-        title: {
-            type: 'string',
-            maxLength: 255,
-            minLength: 1,
-            title: 'Title'
-        },
-        id: {
-            type: 'string',
-            format: 'uuid',
-            title: 'Id'
-        },
-        chunk_count: {
-            anyOf: [
-                {
-                    type: 'integer'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Chunk Count'
-        },
-        course_id: {
-            type: 'string',
-            format: 'uuid',
-            title: 'Course Id'
-        },
-        embedding_namespace: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Embedding Namespace'
-        },
-        filename: {
-            type: 'string',
-            title: 'Filename'
-        },
-        status: {
-            '$ref': '#/components/schemas/DocumentStatus',
-            default: 'pending'
-        },
-        created_at: {
-            type: 'string',
-            format: 'date-time',
-            title: 'Created At'
-        },
-        updated_at: {
-            type: 'string',
-            format: 'date-time',
-            title: 'Updated At'
-        }
-    },
-    type: 'object',
-    required: ['title', 'course_id', 'filename'],
-    title: 'Document'
-} as const;
-
 export const DocumentPublicSchema = {
     properties: {
         id: {
@@ -483,6 +404,85 @@ export const DocumentStatusSchema = {
     type: 'string',
     enum: ['pending', 'processing', 'completed', 'failed'],
     title: 'DocumentStatus'
+} as const;
+
+export const GeneratePodcastRequestSchema = {
+    properties: {
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        mode: {
+            '$ref': '#/components/schemas/ModeEnum',
+            default: 'dialogue'
+        },
+        topics: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Topics'
+        },
+        teacher_voice: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Teacher Voice'
+        },
+        student_voice: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Student Voice'
+        },
+        narrator_voice: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Narrator Voice'
+        },
+        document_ids: {
+            anyOf: [
+                {
+                    items: {
+                        type: 'string',
+                        format: 'uuid'
+                    },
+                    type: 'array'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Document Ids'
+        }
+    },
+    type: 'object',
+    required: ['title'],
+    title: 'GeneratePodcastRequest',
+    description: `Request body for generating a podcast for a course.
+
+Kept in \`internal\` because it's an input/request schema rather than a
+public response model.`
 } as const;
 
 export const HTTPValidationErrorSchema = {
@@ -660,6 +660,12 @@ export const MessageSchema = {
     title: 'Message'
 } as const;
 
+export const ModeEnumSchema = {
+    type: 'string',
+    enum: ['dialogue', 'presentation'],
+    title: 'ModeEnum'
+} as const;
+
 export const NewPasswordSchema = {
     properties: {
         token: {
@@ -676,6 +682,76 @@ export const NewPasswordSchema = {
     type: 'object',
     required: ['token', 'new_password'],
     title: 'NewPassword'
+} as const;
+
+export const PodcastPublicSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        course_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Course Id'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
+        },
+        transcript: {
+            type: 'string',
+            title: 'Transcript'
+        },
+        audio_path: {
+            type: 'string',
+            title: 'Audio Path'
+        },
+        storage_backend: {
+            type: 'string',
+            title: 'Storage Backend'
+        },
+        duration_seconds: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Duration Seconds'
+        },
+        created_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Created At'
+        },
+        updated_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Updated At'
+        }
+    },
+    type: 'object',
+    required: ['id', 'course_id', 'title', 'transcript', 'audio_path', 'storage_backend', 'created_at', 'updated_at'],
+    title: 'PodcastPublic'
+} as const;
+
+export const PodcastsPublicSchema = {
+    properties: {
+        data: {
+            items: {
+                '$ref': '#/components/schemas/PodcastPublic'
+            },
+            type: 'array',
+            title: 'Data'
+        }
+    },
+    type: 'object',
+    required: ['data'],
+    title: 'PodcastsPublic'
 } as const;
 
 export const PrivateUserCreateSchema = {

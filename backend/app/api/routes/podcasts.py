@@ -1,54 +1,43 @@
 import os
 import uuid
-from typing import Any, Optional, List
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse, JSONResponse
-from pydantic import BaseModel
+from fastapi.responses import JSONResponse, StreamingResponse
+from sqlalchemy.orm import selectinload
+from sqlmodel import select
 
 from app.api.deps import CurrentUser, SessionDep
-from sqlmodel import select
-from sqlalchemy.orm import selectinload
 from app.core.config import settings
 from app.models.podcast import Podcast
+from app.schemas.internal import GeneratePodcastRequest
 from app.schemas.public import PodcastPublic, PodcastsPublic
 from app.services.podcast_service import generate_podcast_for_course
 
 router = APIRouter(prefix="/podcasts", tags=["podcasts"])
 
 
-@router.get("/{course_id}", response_model=PodcastsPublic)
-def list_podcasts(course_id: uuid.UUID, session: SessionDep, current_user: CurrentUser) -> Any:
+@router.get("/course/{course_id}", response_model=PodcastsPublic)
+def list_podcasts(course_id: uuid.UUID, session: SessionDep, _current_user: CurrentUser) -> Any:
     pods = session.exec(select(Podcast).where(Podcast.course_id == course_id)).all()
     return PodcastsPublic(data=[PodcastPublic.model_validate(p) for p in pods])
 
 
-class GeneratePodcastRequest(BaseModel):
-    title: Optional[str] = None
-    mode: Optional[str] = None  # 'dialogue' | 'presentation'
-    topics: Optional[str] = None
-    teacher_voice: Optional[str] = None
-    student_voice: Optional[str] = None
-    narrator_voice: Optional[str] = None
-    document_ids: Optional[List[uuid.UUID]] = None
 
-
-@router.post("/{course_id}/generate", response_model=PodcastPublic)
+@router.post("/course/{course_id}/generate", response_model=PodcastPublic)
 async def generate_podcast(
     course_id: uuid.UUID,
     session: SessionDep,
-    current_user: CurrentUser,
-    body: GeneratePodcastRequest | None = None,
+    _current_user: CurrentUser,
+    body: GeneratePodcastRequest,
 ) -> Any:
-    if not body or not body.title or not body.title.strip():
-        raise HTTPException(status_code=422, detail="Title is required")
     title = body.title.strip()
-    mode = (body.mode or "dialogue") if body else "dialogue"
-    topics = body.topics if body else None
-    teacher_voice = body.teacher_voice if body and body.teacher_voice else settings.PODCAST_TEACHER_VOICE
-    student_voice = body.student_voice if body and body.student_voice else settings.PODCAST_STUDENT_VOICE
-    narrator_voice = body.narrator_voice if body and body.narrator_voice else settings.PODCAST_TEACHER_VOICE
-    doc_ids = body.document_ids if body and body.document_ids else None
+    mode = body.mode
+    topics = body.topics
+    teacher_voice = body.teacher_voice or settings.PODCAST_TEACHER_VOICE
+    student_voice = body.student_voice or settings.PODCAST_STUDENT_VOICE
+    narrator_voice = body.narrator_voice or settings.PODCAST_TEACHER_VOICE
+    doc_ids = body.document_ids
     podcast = await generate_podcast_for_course(
         session,
         course_id,
@@ -63,16 +52,16 @@ async def generate_podcast(
     return PodcastPublic.model_validate(podcast)
 
 
-@router.get("/by-id/{podcast_id}", response_model=PodcastPublic)
-def get_podcast(podcast_id: uuid.UUID, session: SessionDep, current_user: CurrentUser) -> Any:
+@router.get("/{podcast_id}", response_model=PodcastPublic)
+def get_podcast(podcast_id: uuid.UUID, session: SessionDep, _current_user: CurrentUser) -> Any:
     pod = session.get(Podcast, podcast_id)
     if not pod:
         raise HTTPException(status_code=404, detail="Podcast not found")
     return PodcastPublic.model_validate(pod)
 
 
-@router.get("/by-id/{podcast_id}/audio")
-def stream_audio(podcast_id: uuid.UUID, session: SessionDep, current_user: CurrentUser):
+@router.get("/{podcast_id}/audio")
+def stream_audio(podcast_id: uuid.UUID, session: SessionDep, _current_user: CurrentUser):
     pod = session.get(Podcast, podcast_id)
     if not pod:
         raise HTTPException(status_code=404, detail="Podcast not found")
@@ -109,7 +98,7 @@ def stream_audio(podcast_id: uuid.UUID, session: SessionDep, current_user: Curre
             raise HTTPException(status_code=500, detail=f"Failed to generate S3 URL: {e}")
 
 
-@router.delete("/by-id/{podcast_id}")
+@router.delete("/{podcast_id}")
 def delete_podcast(podcast_id: uuid.UUID, session: SessionDep, current_user: CurrentUser) -> Any:
     pod = session.exec(
         select(Podcast).where(Podcast.id == podcast_id).options(selectinload(Podcast.course))  # type: ignore

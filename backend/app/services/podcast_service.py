@@ -2,22 +2,21 @@
 Podcast generation service: builds a conversational transcript from course materials
 and generates audio using OpenAI TTS. Stores audio locally or in S3 based on config.
 """
-import io
-import tempfile
-import os
-import uuid
+import json
 import logging
-from typing import Optional, List, Tuple
+import os
+import tempfile
+import uuid
 
 import boto3
 from fastapi import HTTPException
 
+from app.api.deps import SessionDep
 from app.api.routes.documents import async_openai_client
 from app.core.config import settings
 from app.models.podcast import Podcast
-from app.api.deps import SessionDep
+from app.prompts.podcast import dialogue_prompt, presentation_prompt
 from app.services.rag_service import get_question_embedding, retrieve_relevant_context
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -35,48 +34,16 @@ def _sanitize_voice(voice: str, fallback: str) -> str:
     return fb if fb in ALLOWED_VOICES else "alloy"
 
 
-PROMPT_TEMPLATE = (
-    "You are producing a short conversational podcast between a Teacher and a Student.\n"
-    "Use the following course context to guide the conversation. The Teacher should explain core ideas clearly,\n"
-    "and the Student should ask natural, helpful questions someone might have.\n\n"
-    "Constraints:\n"
-    "- Keep it concise (2-4 minutes when spoken).\n"
-    "- Alternate turns: start with 'Teacher:' then 'Student:', etc.\n"
-    "- Do not reference that you are an AI.\n"
-    "- Stay grounded strictly in the provided context; avoid speculation.\n\n"
-    "Context:\n{context}\n\n"
-    "Output format:\n"
-    "Teacher: <first line>\n"
-    "Student: <question>\n"
-    "Teacher: <answer>\n"
-    "... (2-6 exchanges total)\n"
-)
-
-# Monologue (presentation) prompt: no speaker tags
-PROMPT_MONO_TEMPLATE = (
-    "You are producing a concise educational presentation (single narrator).\n"
-    "Use the following course context to deliver a clear, coherent explanation,\n"
-    "highlighting key ideas, definitions, examples, and takeaways.\n\n"
-    "Constraints:\n"
-    "- Keep it to ~2-4 minutes when spoken.\n"
-    "- No speaker labels or dialogue.\n"
-    "- Maintain an engaging, instructive, academic tone.\n"
-    "- Stay strictly grounded in the provided context; no speculation.\n\n"
-    "Context:\n{context}\n\n"
-    "Output: A single continuous narrative (no role tags).\n"
-)
-
-
 async def generate_transcript_from_context(context: str, title: str) -> str:
     system = (
         "You create engaging, accurate educational dialog scripts suitable for audio narration."
     )
-    user = PROMPT_TEMPLATE.format(context=context)
+    user = dialogue_prompt(context, title)
     resp = await async_openai_client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system},
-            {"role": "user", "content": f"Title: {title}\n\n{user}"},
+            {"role": "user", "content": user},
         ],
         temperature=0.6,
         max_tokens=1200,
@@ -89,12 +56,12 @@ async def generate_presentation_transcript(context: str, title: str) -> str:
     system = (
         "You create concise, accurate educational presentations suitable for audio narration."
     )
-    user = PROMPT_MONO_TEMPLATE.format(context=context)
+    user = presentation_prompt(context, title)
     resp = await async_openai_client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system},
-            {"role": "user", "content": f"Title: {title}\n\n{user}"},
+            {"role": "user", "content": user},
         ],
         temperature=0.6,
         max_tokens=1200,
@@ -211,8 +178,8 @@ async def generate_podcast_for_course(
     student_voice: str,
     narrator_voice: str,
     mode: str = "dialogue",
-    topics: Optional[str] = None,
-    document_ids: Optional[list[uuid.UUID]] = None,
+    topics: str | None = None,
+    document_ids: list[uuid.UUID] | None = None,
 ) -> Podcast:
     # Retrieve broad context for the course by embedding a generic request and pulling top content
     focus = f" Provide an overview for course {course_id}." + (f" Focus on: {topics}." if topics else "")
@@ -235,7 +202,7 @@ async def generate_podcast_for_course(
             for t in turns
         ])
         if turns:
-            temp_files: List[str] = []
+            temp_files: list[str] = []
             try:
                 for t in turns:
                     voice = teacher_voice if t["role"] == "teacher" else student_voice
@@ -281,10 +248,10 @@ async def generate_podcast_for_course(
     return podcast
 
 
-def _parse_dialog_segments(transcript: str) -> List[Tuple[str, str]]:
-    segments: List[Tuple[str, str]] = []
-    current_speaker: Optional[str] = None
-    current_text: List[str] = []
+def _parse_dialog_segments(transcript: str) -> list[tuple[str, str]]:
+    segments: list[tuple[str, str]] = []
+    current_speaker: str | None = None
+    current_text: list[str] = []
     for raw in transcript.splitlines():
         line = raw.strip()
         if not line:
@@ -354,11 +321,11 @@ async def _tts_to_bytes(text: str, voice: str) -> bytes:
             pass
 
 
-def _concat_files(paths: List[str]) -> bytes:
+def _concat_files(paths: list[str]) -> bytes:
     if not paths:
         return b""
     # Naive byte concatenation works for many MP3 players and is acceptable for MVP
-    chunks: List[bytes] = []
+    chunks: list[bytes] = []
     for p in paths:
         try:
             with open(p, 'rb') as f:

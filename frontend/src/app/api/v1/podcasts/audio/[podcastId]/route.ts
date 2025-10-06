@@ -1,52 +1,68 @@
-import { type NextRequest, NextResponse } from 'next/server'
-import { PodcastService } from '@/lib/podcast-service'
-import { get } from '@/utils'
+import { type NextRequest } from 'next/server'
+import { PodcastsService } from '@/client'
 
 interface ContextParams {
   params: Promise<{ podcastId: string }>
 }
 
-interface ErrorResponse {
-  detail: string
-}
-
 /**
  * Stream audio for a podcast
- * Handles both local file streaming and S3 presigned URLs
+ * Uses the same pattern as chat streaming with generated client
  */
-export async function GET(_req: NextRequest, context: ContextParams): Promise<NextResponse> {
+export async function GET(_req: NextRequest, context: ContextParams) {
   try {
     const { podcastId } = await context.params
-    const response = await PodcastService.getAudioStream(podcastId)
     
-    const contentType = response.headers.get('content-type') || 'application/octet-stream'
-    
-    if (contentType.includes('application/json')) {
-      const text = await response.text()
-      return new NextResponse(text, { 
-        status: response.status, 
-        headers: { 'Content-Type': 'application/json' } 
-      })
+    const response = await PodcastsService.getApiV1PodcastsByPodcastIdAudio({
+      path: { podcast_id: podcastId },
+      requestValidator: async () => {},
+      responseValidator: async () => {},
+      responseType: 'stream',
+    })
+
+    // Convert Node.js IncomingMessage to Web ReadableStream (same as chat)
+    const nodeStream = response.data as any
+
+    if (!nodeStream || typeof nodeStream.pipe !== 'function') {
+      throw new Error('Expected Node readable stream from PodcastsService')
     }
-    
-    const blob = await response.arrayBuffer()
-    return new NextResponse(blob, { 
-      status: response.status, 
-      headers: { 'Content-Type': contentType } 
+
+    const webStream = new ReadableStream({
+      start(controller) {
+        nodeStream.on('data', (chunk: Buffer) => {
+          // Convert Buffer to Uint8Array for Web ReadableStream
+          controller.enqueue(new Uint8Array(chunk))
+        })
+
+        nodeStream.on('end', () => {
+          controller.close()
+        })
+
+        nodeStream.on('error', (error: Error) => {
+          controller.error(error)
+        })
+      },
+
+      cancel() {
+        nodeStream.destroy()
+      }
+    })
+
+    return new Response(webStream, {
+      headers: {
+        'Content-Type': 'audio/mpeg',
+        'Cache-Control': 'no-cache',
+        'Accept-Ranges': 'bytes',
+        'X-Accel-Buffering': 'no',
+      },
     })
   } catch (error) {
     // Log error in development for debugging
     if (process.env.NODE_ENV === 'development') {
-      console.error('[PodcastService] Audio stream error:', error)
+      console.error('[PodcastAudio] Audio stream error:', error)
     }
     
-    const status: number = get(error as Record<string, never>, 'response.status', 500)
-    const body: ErrorResponse = get(
-      error as Record<string, never>, 
-      'response.data.detail', 
-      { detail: 'Internal Server Error' }
-    )
-    return NextResponse.json(body, { status })
+    return Response.json({ error: 'Failed to stream audio' }, { status: 500 })
   }
 }
 

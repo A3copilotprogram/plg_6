@@ -41,21 +41,18 @@ export const zChatMessage = z.object({
 
 /**
  * ChatPublic
+ * Public schema for Chat message entries (no quiz fields).
  */
 export const zChatPublic = z.object({
     id: z.uuid(),
     course_id: z.uuid(),
-    total_submitted: z.int(),
-    total_correct: z.int(),
-    score_percentage: z.optional(z.union([
-        z.number(),
+    message: z.optional(z.union([
+        z.string(),
         z.null()
     ])),
-    is_completed: z.boolean(),
+    is_system: z.boolean(),
     created_at: z.iso.datetime(),
-    updated_at: z.iso.datetime(),
-    message: z.string(),
-    is_system: z.boolean()
+    updated_at: z.iso.datetime()
 });
 
 /**
@@ -171,24 +168,43 @@ export const zDifficultyLevel = z.enum([
 ]);
 
 /**
- * Document
+ * ModeEnum
  */
-export const zDocument = z.object({
-    title: z.string().min(1).max(255),
-    id: z.optional(z.uuid()),
-    chunk_count: z.optional(z.union([
-        z.int(),
-        z.null()
-    ])),
-    course_id: z.uuid(),
-    embedding_namespace: z.optional(z.union([
+export const zModeEnum = z.enum([
+    'dialogue',
+    'presentation'
+]);
+
+/**
+ * GeneratePodcastRequest
+ * Request body for generating a podcast for a course.
+ *
+ * Kept in `internal` because it's an input/request schema rather than a
+ * public response model.
+ */
+export const zGeneratePodcastRequest = z.object({
+    title: z.string(),
+    mode: z.optional(zModeEnum),
+    topics: z.optional(z.union([
         z.string(),
         z.null()
     ])),
-    filename: z.string(),
-    status: z.optional(zDocumentStatus),
-    created_at: z.optional(z.iso.datetime()),
-    updated_at: z.optional(z.iso.datetime())
+    teacher_voice: z.optional(z.union([
+        z.string(),
+        z.null()
+    ])),
+    student_voice: z.optional(z.union([
+        z.string(),
+        z.null()
+    ])),
+    narrator_voice: z.optional(z.union([
+        z.string(),
+        z.null()
+    ])),
+    document_ids: z.optional(z.union([
+        z.array(z.uuid()),
+        z.null()
+    ]))
 });
 
 /**
@@ -282,6 +298,31 @@ export const zMessage = z.object({
 export const zNewPassword = z.object({
     token: z.string(),
     new_password: z.string().min(8).max(40)
+});
+
+/**
+ * PodcastPublic
+ */
+export const zPodcastPublic = z.object({
+    id: z.uuid(),
+    course_id: z.uuid(),
+    title: z.string(),
+    transcript: z.string(),
+    audio_path: z.string(),
+    storage_backend: z.string(),
+    duration_seconds: z.optional(z.union([
+        z.number(),
+        z.null()
+    ])),
+    created_at: z.iso.datetime(),
+    updated_at: z.iso.datetime()
+});
+
+/**
+ * PodcastsPublic
+ */
+export const zPodcastsPublic = z.object({
+    data: z.array(zPodcastPublic)
 });
 
 /**
@@ -882,7 +923,7 @@ export const zGetApiV1CoursesByIdDocumentsData = z.object({
  * Response Courses-List Documents
  * Successful Response
  */
-export const zGetApiV1CoursesByIdDocumentsResponse = z.array(z.record(z.string(), z.unknown()));
+export const zGetApiV1CoursesByIdDocumentsResponse = z.array(zDocumentPublic);
 
 export const zGetApiV1CoursesByIdQuizzesData = z.object({
     body: z.optional(z.never()),
@@ -1017,6 +1058,11 @@ export const zDeleteApiV1DocumentsByIdData = z.object({
     query: z.optional(z.never())
 });
 
+/**
+ * Successful Response
+ */
+export const zDeleteApiV1DocumentsByIdResponse = zMessage;
+
 export const zGetApiV1DocumentsByIdData = z.object({
     body: z.optional(z.never()),
     path: z.object({
@@ -1028,7 +1074,62 @@ export const zGetApiV1DocumentsByIdData = z.object({
 /**
  * Successful Response
  */
-export const zGetApiV1DocumentsByIdResponse = zDocument;
+export const zGetApiV1DocumentsByIdResponse = zDocumentPublic;
+
+export const zGetApiV1PodcastsCourseByCourseIdData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        course_id: z.uuid()
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * Successful Response
+ */
+export const zGetApiV1PodcastsCourseByCourseIdResponse = zPodcastsPublic;
+
+export const zPostApiV1PodcastsCourseByCourseIdGenerateData = z.object({
+    body: zGeneratePodcastRequest,
+    path: z.object({
+        course_id: z.uuid()
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * Successful Response
+ */
+export const zPostApiV1PodcastsCourseByCourseIdGenerateResponse = zPodcastPublic;
+
+export const zDeleteApiV1PodcastsByPodcastIdData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        podcast_id: z.uuid()
+    }),
+    query: z.optional(z.never())
+});
+
+export const zGetApiV1PodcastsByPodcastIdData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        podcast_id: z.uuid()
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * Successful Response
+ */
+export const zGetApiV1PodcastsByPodcastIdResponse = zPodcastPublic;
+
+export const zGetApiV1PodcastsByPodcastIdAudioData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        podcast_id: z.uuid()
+    }),
+    query: z.optional(z.never())
+});
 
 export const zGetApiV1QuizSessionsByIdData = z.object({
     body: z.optional(z.never()),

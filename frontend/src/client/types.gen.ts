@@ -64,6 +64,7 @@ export type ChatMessage = {
 
 /**
  * ChatPublic
+ * Public schema for Chat message entries (no quiz fields).
  */
 export type ChatPublic = {
     /**
@@ -75,21 +76,13 @@ export type ChatPublic = {
      */
     course_id: string;
     /**
-     * Total Submitted
+     * Message
      */
-    total_submitted: number;
+    message?: string | null;
     /**
-     * Total Correct
+     * Is System
      */
-    total_correct: number;
-    /**
-     * Score Percentage
-     */
-    score_percentage?: number | null;
-    /**
-     * Is Completed
-     */
-    is_completed: boolean;
+    is_system: boolean;
     /**
      * Created At
      */
@@ -98,14 +91,6 @@ export type ChatPublic = {
      * Updated At
      */
     updated_at: string;
-    /**
-     * Message
-     */
-    message: string;
-    /**
-     * Is System
-     */
-    is_system: boolean;
 };
 
 /**
@@ -254,45 +239,6 @@ export type CoursesPublic = {
 export type DifficultyLevel = 'easy' | 'medium' | 'hard' | 'expert' | 'all';
 
 /**
- * Document
- */
-export type Document = {
-    /**
-     * Title
-     */
-    title: string;
-    /**
-     * Id
-     */
-    id?: string;
-    /**
-     * Chunk Count
-     */
-    chunk_count?: number | null;
-    /**
-     * Course Id
-     */
-    course_id: string;
-    /**
-     * Embedding Namespace
-     */
-    embedding_namespace?: string | null;
-    /**
-     * Filename
-     */
-    filename: string;
-    status?: DocumentStatus;
-    /**
-     * Created At
-     */
-    created_at?: string;
-    /**
-     * Updated At
-     */
-    updated_at?: string;
-};
-
-/**
  * DocumentPublic
  */
 export type DocumentPublic = {
@@ -319,6 +265,41 @@ export type DocumentPublic = {
  * DocumentStatus
  */
 export type DocumentStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+/**
+ * GeneratePodcastRequest
+ * Request body for generating a podcast for a course.
+ *
+ * Kept in `internal` because it's an input/request schema rather than a
+ * public response model.
+ */
+export type GeneratePodcastRequest = {
+    /**
+     * Title
+     */
+    title: string;
+    mode?: ModeEnum;
+    /**
+     * Topics
+     */
+    topics?: string | null;
+    /**
+     * Teacher Voice
+     */
+    teacher_voice?: string | null;
+    /**
+     * Student Voice
+     */
+    student_voice?: string | null;
+    /**
+     * Narrator Voice
+     */
+    narrator_voice?: string | null;
+    /**
+     * Document Ids
+     */
+    document_ids?: Array<string> | null;
+};
 
 /**
  * HTTPValidationError
@@ -427,6 +408,11 @@ export type Message = {
 };
 
 /**
+ * ModeEnum
+ */
+export type ModeEnum = 'dialogue' | 'presentation';
+
+/**
  * NewPassword
  */
 export type NewPassword = {
@@ -438,6 +424,58 @@ export type NewPassword = {
      * New Password
      */
     new_password: string;
+};
+
+/**
+ * PodcastPublic
+ */
+export type PodcastPublic = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Course Id
+     */
+    course_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Transcript
+     */
+    transcript: string;
+    /**
+     * Audio Path
+     */
+    audio_path: string;
+    /**
+     * Storage Backend
+     */
+    storage_backend: string;
+    /**
+     * Duration Seconds
+     */
+    duration_seconds?: number | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * PodcastsPublic
+ */
+export type PodcastsPublic = {
+    /**
+     * Data
+     */
+    data: Array<PodcastPublic>;
 };
 
 /**
@@ -1685,9 +1723,7 @@ export type GetApiV1CoursesByIdDocumentsResponses = {
      * Response Courses-List Documents
      * Successful Response
      */
-    200: Array<{
-        [key: string]: unknown;
-    }>;
+    200: Array<DocumentPublic>;
 };
 
 export type GetApiV1CoursesByIdDocumentsResponse = GetApiV1CoursesByIdDocumentsResponses[keyof GetApiV1CoursesByIdDocumentsResponses];
@@ -2008,11 +2044,12 @@ export type DeleteApiV1DocumentsByIdError = DeleteApiV1DocumentsByIdErrors[keyof
 
 export type DeleteApiV1DocumentsByIdResponses = {
     /**
-     * Response Documents-Delete Document
      * Successful Response
      */
-    200: unknown;
+    200: Message;
 };
+
+export type DeleteApiV1DocumentsByIdResponse = DeleteApiV1DocumentsByIdResponses[keyof DeleteApiV1DocumentsByIdResponses];
 
 export type GetApiV1DocumentsByIdData = {
     body?: never;
@@ -2039,10 +2076,157 @@ export type GetApiV1DocumentsByIdResponses = {
     /**
      * Successful Response
      */
-    200: Document;
+    200: DocumentPublic;
 };
 
 export type GetApiV1DocumentsByIdResponse = GetApiV1DocumentsByIdResponses[keyof GetApiV1DocumentsByIdResponses];
+
+export type GetApiV1PodcastsCourseByCourseIdData = {
+    body?: never;
+    path: {
+        /**
+         * Course Id
+         */
+        course_id: string;
+    };
+    query?: never;
+    url: '/api/v1/podcasts/course/{course_id}';
+};
+
+export type GetApiV1PodcastsCourseByCourseIdErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetApiV1PodcastsCourseByCourseIdError = GetApiV1PodcastsCourseByCourseIdErrors[keyof GetApiV1PodcastsCourseByCourseIdErrors];
+
+export type GetApiV1PodcastsCourseByCourseIdResponses = {
+    /**
+     * Successful Response
+     */
+    200: PodcastsPublic;
+};
+
+export type GetApiV1PodcastsCourseByCourseIdResponse = GetApiV1PodcastsCourseByCourseIdResponses[keyof GetApiV1PodcastsCourseByCourseIdResponses];
+
+export type PostApiV1PodcastsCourseByCourseIdGenerateData = {
+    body: GeneratePodcastRequest;
+    path: {
+        /**
+         * Course Id
+         */
+        course_id: string;
+    };
+    query?: never;
+    url: '/api/v1/podcasts/course/{course_id}/generate';
+};
+
+export type PostApiV1PodcastsCourseByCourseIdGenerateErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type PostApiV1PodcastsCourseByCourseIdGenerateError = PostApiV1PodcastsCourseByCourseIdGenerateErrors[keyof PostApiV1PodcastsCourseByCourseIdGenerateErrors];
+
+export type PostApiV1PodcastsCourseByCourseIdGenerateResponses = {
+    /**
+     * Successful Response
+     */
+    200: PodcastPublic;
+};
+
+export type PostApiV1PodcastsCourseByCourseIdGenerateResponse = PostApiV1PodcastsCourseByCourseIdGenerateResponses[keyof PostApiV1PodcastsCourseByCourseIdGenerateResponses];
+
+export type DeleteApiV1PodcastsByPodcastIdData = {
+    body?: never;
+    path: {
+        /**
+         * Podcast Id
+         */
+        podcast_id: string;
+    };
+    query?: never;
+    url: '/api/v1/podcasts/{podcast_id}';
+};
+
+export type DeleteApiV1PodcastsByPodcastIdErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteApiV1PodcastsByPodcastIdError = DeleteApiV1PodcastsByPodcastIdErrors[keyof DeleteApiV1PodcastsByPodcastIdErrors];
+
+export type DeleteApiV1PodcastsByPodcastIdResponses = {
+    /**
+     * Response Podcasts-Delete Podcast
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type GetApiV1PodcastsByPodcastIdData = {
+    body?: never;
+    path: {
+        /**
+         * Podcast Id
+         */
+        podcast_id: string;
+    };
+    query?: never;
+    url: '/api/v1/podcasts/{podcast_id}';
+};
+
+export type GetApiV1PodcastsByPodcastIdErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetApiV1PodcastsByPodcastIdError = GetApiV1PodcastsByPodcastIdErrors[keyof GetApiV1PodcastsByPodcastIdErrors];
+
+export type GetApiV1PodcastsByPodcastIdResponses = {
+    /**
+     * Successful Response
+     */
+    200: PodcastPublic;
+};
+
+export type GetApiV1PodcastsByPodcastIdResponse = GetApiV1PodcastsByPodcastIdResponses[keyof GetApiV1PodcastsByPodcastIdResponses];
+
+export type GetApiV1PodcastsByPodcastIdAudioData = {
+    body?: never;
+    path: {
+        /**
+         * Podcast Id
+         */
+        podcast_id: string;
+    };
+    query?: never;
+    url: '/api/v1/podcasts/{podcast_id}/audio';
+};
+
+export type GetApiV1PodcastsByPodcastIdAudioErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetApiV1PodcastsByPodcastIdAudioError = GetApiV1PodcastsByPodcastIdAudioErrors[keyof GetApiV1PodcastsByPodcastIdAudioErrors];
+
+export type GetApiV1PodcastsByPodcastIdAudioResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
 
 export type GetApiV1QuizSessionsByIdData = {
     body?: never;

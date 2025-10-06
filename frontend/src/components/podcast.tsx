@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useTransition } from 'react'
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Trash2 } from 'lucide-react'
-import { PodcastUI } from '@/lib/podcast-ui'
+import { getDocumentsByCourse } from '@/actions/documents'
+import { getPodcasts, generatePodcast, deletePodcast } from '@/actions/podcasts'
 
 type Podcast = {
   id: string
@@ -22,7 +23,8 @@ function formatTime(seconds: number): string {
 
 function PodcastPlayer({ podcastId, title, transcript, onDeleted }: { podcastId: string; title: string; transcript: string; onDeleted: () => void }) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
-  const [src, setSrc] = useState<string>(`/api/v1/podcasts/audio/${podcastId}`)
+  const makeAudioUrl = (id: string) => `/api/v1/podcasts/audio/${id}`
+  const [src, setSrc] = useState<string>(makeAudioUrl(podcastId))
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -34,7 +36,7 @@ function PodcastPlayer({ podcastId, title, transcript, onDeleted }: { podcastId:
   async function resolveAudioSrc() {
     try {
       setResolving(true)
-      const res = await fetch(`/api/v1/podcasts/audio/${podcastId}`, {
+      const res = await fetch(makeAudioUrl(podcastId), {
         // Encourage JSON path for S3 presign; local stream will ignore this
         headers: { Accept: 'application/json' },
         cache: 'no-store',
@@ -45,10 +47,10 @@ function PodcastPlayer({ podcastId, title, transcript, onDeleted }: { podcastId:
         if (data?.url) setSrc(data.url)
       } else {
         // Fallback to route-streaming
-        setSrc(`/api/v1/podcasts/audio/${podcastId}`)
+        setSrc(makeAudioUrl(podcastId))
       }
     } catch {
-      setSrc(`/api/v1/podcasts/audio/${podcastId}`)
+      setSrc(makeAudioUrl(podcastId))
     } finally {
       setResolving(false)
     }
@@ -141,8 +143,12 @@ function PodcastPlayer({ podcastId, title, transcript, onDeleted }: { podcastId:
             onClick={async () => {
               if (!confirm('Delete this podcast?')) return
               try {
-                await PodcastUI.delete(podcastId)
-                onDeleted()
+                const result = await deletePodcast(podcastId)
+                if (result.ok) {
+                  onDeleted()
+                } else {
+                  console.error('Failed to delete podcast:', result.error.message)
+                }
               } catch (e) {
                 // ignore UI errors; a toast could be added here
               }
@@ -212,9 +218,13 @@ export default function PodcastComponent({ courseId }: { courseId: string }) {
   async function fetchList() {
     try {
       setLoading(true)
-      const json = await PodcastUI.list(courseId)
-      setPodcasts(json.data ?? [])
-      setError(null)
+      const result = await getPodcasts(courseId)
+      if (result.ok) {
+        setPodcasts(result.data.data ?? [])
+        setError(null)
+      } else {
+        setError(result.error.message || 'Failed to fetch podcasts')
+      }
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -226,9 +236,12 @@ export default function PodcastComponent({ courseId }: { courseId: string }) {
     fetchList()
     ;(async () => {
       try {
-        const r = await fetch(`/api/v1/documents/by-course/${courseId}`, { cache: 'no-store' })
-        const j = await r.json()
-        setDocuments(Array.isArray(j) ? j : [])
+        const result = await getDocumentsByCourse(courseId)
+        if (result.ok) {
+          setDocuments(Array.isArray(result.data) ? result.data : [])
+        } else {
+          setDocuments([])
+        }
       } catch {
         setDocuments([])
       }
@@ -243,7 +256,7 @@ export default function PodcastComponent({ courseId }: { courseId: string }) {
           setError('Title is required')
           return
         }
-        await PodcastUI.generate(courseId, {
+        const result = await generatePodcast(courseId, {
           title,
           mode,
           topics: topics || undefined,
@@ -252,12 +265,16 @@ export default function PodcastComponent({ courseId }: { courseId: string }) {
           narrator_voice: mode === 'presentation' ? teacherVoice : undefined,
           document_ids: selectedDocs.length ? selectedDocs : undefined,
         })
-        await fetchList()
         
-        // Clear form fields after successful generation
-        setTitle('')
-        setTopics('')
-        setSelectedDocs([])
+        if (result.ok) {
+          await fetchList()
+          // Clear form fields after successful generation
+          setTitle('')
+          setTopics('')
+          setSelectedDocs([])
+        } else {
+          setError(result.error.message || 'Failed to generate podcast')
+        }
       } catch (e) {
         setError((e as Error).message)
       }
