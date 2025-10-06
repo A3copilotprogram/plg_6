@@ -18,7 +18,7 @@ router = APIRouter(prefix="/podcasts", tags=["podcasts"])
 
 
 @router.get("/course/{course_id}", response_model=PodcastsPublic)
-def list_podcasts(course_id: uuid.UUID, session: SessionDep, _current_user: CurrentUser) -> Any:
+def list_podcasts(course_id: uuid.UUID, session: SessionDep, _current_user: CurrentUser) -> PodcastsPublic:
     pods = session.exec(select(Podcast).where(Podcast.course_id == course_id)).all()
     return PodcastsPublic(data=[PodcastPublic.model_validate(p) for p in pods])
 
@@ -30,7 +30,7 @@ async def generate_podcast(
     session: SessionDep,
     _current_user: CurrentUser,
     body: GeneratePodcastRequest,
-) -> Any:
+) -> PodcastPublic:
     title = body.title.strip()
     mode = body.mode
     topics = body.topics
@@ -53,7 +53,7 @@ async def generate_podcast(
 
 
 @router.get("/{podcast_id}", response_model=PodcastPublic)
-def get_podcast(podcast_id: uuid.UUID, session: SessionDep, _current_user: CurrentUser) -> Any:
+def get_podcast(podcast_id: uuid.UUID, session: SessionDep, _current_user: CurrentUser) -> PodcastPublic:
     pod = session.get(Podcast, podcast_id)
     if not pod:
         raise HTTPException(status_code=404, detail="Podcast not found")
@@ -99,7 +99,7 @@ def stream_audio(podcast_id: uuid.UUID, session: SessionDep, _current_user: Curr
 
 
 @router.delete("/{podcast_id}")
-def delete_podcast(podcast_id: uuid.UUID, session: SessionDep, current_user: CurrentUser) -> Any:
+def delete_podcast(podcast_id: uuid.UUID, session: SessionDep, current_user: CurrentUser) -> dict[str, str]:
     pod = session.exec(
         select(Podcast).where(Podcast.id == podcast_id).options(selectinload(Podcast.course))  # type: ignore
     ).first()
