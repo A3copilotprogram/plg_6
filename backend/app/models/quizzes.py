@@ -19,6 +19,7 @@ class QuizBase(SQLModel):
     topic: str
     chunk_id: uuid.UUID
     difficulty_level: DifficultyLevel
+    feedback: str | None = None
 
 
 # Properties to receive on quiz creation
@@ -42,6 +43,7 @@ class QuizAttemptBase(SQLModel):
     correct_answer_text: str
 
     time_spent_seconds: float = Field(default=0.0)
+    feedback: str | None = None
 
 
 class QuizSessionBase(SQLModel):

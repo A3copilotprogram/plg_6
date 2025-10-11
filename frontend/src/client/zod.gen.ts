@@ -308,7 +308,11 @@ export const zQuizAttemptPublic = z.object({
     is_correct: z.boolean(),
     correct_answer_text: z.string(),
     time_spent_seconds: z.number(),
-    created_at: z.iso.datetime()
+    created_at: z.iso.datetime(),
+    feedback: z.optional(z.union([
+        z.string(),
+        z.null()
+    ]))
 });
 
 /**

@@ -498,6 +498,10 @@ export type QuizAttemptPublic = {
      * Created At
      */
     created_at: string;
+    /**
+     * Feedback
+     */
+    feedback?: string | null;
 };
 
 /**

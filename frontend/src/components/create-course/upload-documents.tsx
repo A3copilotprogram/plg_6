@@ -74,7 +74,7 @@ export default function UploadDocuments({courseId}: {courseId: string}) {
           <div className='flex justify-end mt-8'>
             <Button onClick={handleRedirect} disabled={isEmpty || isDisabled}>
               {isEmpty && 'Upload Documents'}
-              {isDisabled && 'Uploading...'}
+              {!isEmpty && isDisabled && 'Uploading...'}
               {!isEmpty && !isDisabled && 'Complete'}
               <ChevronRight />
             </Button>

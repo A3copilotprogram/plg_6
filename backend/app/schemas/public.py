@@ -183,6 +183,7 @@ class QuizAttemptPublic(PydanticBase):
     correct_answer_text: str
     time_spent_seconds: float
     created_at: datetime
+    feedback: str | None = None
 
 
 class QuizSessionPublicWithQuizzes(QuizSessionPublic):

@@ -118,21 +118,15 @@ async def generate_quizzes_task(document_id: uuid.UUID, session: SessionDep):
                         )
                         continue
 
-                    # ⚠️ CRITICAL INTEGRITY FIX: We must assign the quiz to a
-                    # chunk within the batch. This requires the LLM to return
-                    # the source text snippet or a placeholder.
-                    # As a compromise, we link the quiz to the *first chunk*
-                    # in the batch, which is better than linking it to chunks[0].
                     new_quiz = Quiz(
-                        chunk_id=current_batch_chunks[
-                            0
-                        ].id,  # Compromise: Link to the batch start
+                        chunk_id=current_batch_chunks[0].id,
                         difficulty_level=difficulty_level,
                         quiz_text=q_data["quiz"],
                         correct_answer=clean_string(q_data["correct_answer"]),
                         distraction_1=clean_string(q_data["distraction_1"]),
                         distraction_2=clean_string(q_data["distraction_2"]),
                         distraction_3=clean_string(q_data["distraction_3"]),
+                        feedback=clean_string(q_data["feedback"]),
                         topic=clean_string(q_data["topic"]),
                     )
                     session.add(new_quiz)
@@ -179,11 +173,17 @@ def score_quiz_batch(
         statement = (
             select(Quiz)
             .where(Quiz.id.in_(submitted_ids))  # type: ignore
-            .options(load_only(Quiz.id, Quiz.correct_answer))  # type: ignore
+            .options(load_only(Quiz.id, Quiz.correct_answer, Quiz.feedback))  # type: ignore
         )
 
+        quizzes = db.exec(statement).all()
+
         correct_answers_map: dict[uuid.UUID, str] = {
-            q.id: q.correct_answer.strip() for q in db.exec(statement).all()
+            q.id: q.correct_answer.strip() for q in quizzes
+        }
+
+        feedback_map: dict[uuid.UUID, str] = {
+            q.id: (q.feedback or "").strip() for q in quizzes
         }
 
         missing_ids = set(submitted_ids) - set(correct_answers_map.keys())
@@ -211,9 +211,8 @@ def score_quiz_batch(
 
             if is_correct:
                 total_correct += 1
-                feedback = "Correct! Well done."
-            else:
-                feedback = "Incorrect. Review the material."
+
+            feedback = feedback_map[submitted_quiz_id]
 
             results.append(
                 SingleQuizScore(
@@ -231,6 +230,7 @@ def score_quiz_batch(
                 selected_answer_text=submitted_text,
                 is_correct=is_correct,
                 correct_answer_text=correct_text,
+                feedback=feedback,
             )
             db.add(attempt)
 

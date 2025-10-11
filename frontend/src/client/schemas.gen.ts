@@ -735,6 +735,17 @@ export const QuizAttemptPublicSchema = {
             type: 'string',
             format: 'date-time',
             title: 'Created At'
+        },
+        feedback: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Feedback'
         }
     },
     type: 'object',
