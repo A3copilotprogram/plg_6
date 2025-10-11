@@ -1,7 +1,6 @@
 from openai.types.chat import ChatCompletion
 
 from app.llm_clients.openai_client import client
-
 from app.schemas.public import DifficultyLevel
 
 
