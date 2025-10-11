@@ -1,6 +1,7 @@
 import asyncio
 import os
-import shutil
+
+# import shutil
 import tempfile
 import uuid
 from asyncio.log import logger
@@ -148,10 +149,10 @@ async def process_pdf_task(
             session.add(chunk_record)
             chunk_records.append(chunk_record)
         session.commit()
-
+        logger.info(f"Chunks length {len(chunks)}")
         embeddings = []
         BATCH_SIZE = 50
-        for i in range(0, len(chunks), BATCH_SIZE):
+        for i in range(0, len(chunks), len(chunks)):
             batch = chunks[i : i + BATCH_SIZE]
             embeddings.extend(await embed_chunks(batch))
             await asyncio.sleep(0)
@@ -198,36 +199,37 @@ async def process_pdf_task(
         os.remove(file_path)
 
 
-async def handle_document_processing(
-    file: UploadFile, document_id: uuid.UUID, session: SessionDep
-):
-    """
-    Background task to handle all blocking I/O:
-    saving the file and then calling the main processing task.
-    """
-    tmp_dir = tempfile.mkdtemp()
-    tmp_path = os.path.join(tmp_dir, f"{document_id}_{file.filename}")
+# async def handle_document_processing(
+#     file: UploadFile, document_id: uuid.UUID, session: SessionDep
+# ):
+#     """
+#     Background task to handle all blocking I/O:
+#     saving the file and then calling the main processing task.
+#     """
+#     tmp_dir = tempfile.mkdtemp()
+#     tmp_path = os.path.join(tmp_dir, f"{document_id}_{file.filename}")
 
-    try:
-        with open(tmp_path, "wb") as buffer:
-            while True:
-                chunk = await file.read(1024)  # Read in 1KB chunks
-                if not chunk:
-                    break
-                buffer.write(chunk)
+#     try:
+#         with open(tmp_path, "wb") as buffer:
+#             while True:
+#                 chunk = await file.read(1024)  # Read in 1KB chunks
+#                 if not chunk:
+#                     break
+#                 buffer.write(chunk)
+#         # process_pdf_task, tmp_path, db_document.id, db_document.course_id, session
 
-        await process_pdf_task(tmp_path, document_id, session)
+#         await process_pdf_task(tmp_path, document_id, session)
 
-    except Exception as e:
-        logger.error(f"[handle_document_processing] Error processing document: {e}")
-        document = session.get(Document, document_id)
-        if document:
-            document.status = DocumentStatus.FAILED
-            session.add(document)
-            session.commit()
+#     except Exception as e:
+#         logger.error(f"[handle_document_processing] Error processing document: {e}")
+#         document = session.get(Document, document_id)
+#         if document:
+#             document.status = DocumentStatus.FAILED
+#             session.add(document)
+#             session.commit()
 
-    finally:
-        shutil.rmtree(tmp_dir)
+#     finally:
+#         shutil.rmtree(tmp_dir)
 
 
 @router.post("/process")
