@@ -295,6 +295,7 @@ def start_new_quiz_session(
     session: SessionDep,
     current_user: CurrentUser,
     filters: Annotated[QuizFilterParams, Depends()],
+    limit: int = 5,
 ) -> Any:
     """
     Creates a new, immutable QuizSession, selects the initial set of questions,
@@ -318,7 +319,7 @@ def start_new_quiz_session(
             )
 
         initial_quizzes = select_quizzes_by_course_criteria(
-            session, course_id, current_user, filters.difficulty
+            session, course_id, current_user, filters.difficulty, limit
         )
 
         if not initial_quizzes:

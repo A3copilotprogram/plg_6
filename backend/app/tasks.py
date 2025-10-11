@@ -362,16 +362,34 @@ def select_quizzes_by_course_criteria(
     Selects a set of Quizzes for a specific course and difficulty level,
     ensuring the user owns the course. This is used for NEW sessions.
     """
-    statement = (
+    quiz_attempts_statement = (
+        select(QuizAttempt)
+        .join(Quiz)
+        .where(
+            Quiz.course_id == course_id,  # type: ignore
+            Quiz.difficulty_level == difficulty,  # type: ignore
+            QuizAttempt.is_correct == True,  # noqa: E712
+        )
+        .options(load_only(QuizAttempt.quiz_id))  # type: ignore
+    )
+
+    quiz_attempts_raw = db.exec(quiz_attempts_statement).all()
+
+    logger.info(f"Quiz attempts: {quiz_attempts_raw}")
+
+    quizzes_statement = (
         select(Quiz)
-        .join(Chunk, Quiz.chunk_id == Chunk.id)  # type: ignore
-        .join(Document, Chunk.document_id == Document.id)  # type: ignore
-        .join(Course, Document.course_id == Course.id)  # type: ignore
+        .join(Course)
         .where(
             and_(
-                Course.id == course_id,  # type: ignore
+                Quiz.course_id == course_id,  # type: ignore
                 Course.owner_id == current_user.id,  # type: ignore
                 Quiz.difficulty_level == difficulty,  # type: ignore
+            )
+        )
+        .filter(
+            Quiz.id.not_in(
+                [attempt.quiz_id for attempt in quiz_attempts_raw]  # type: ignore
             )
         )
         .options(selectinload(Quiz.chunk))  # type: ignore[arg-type]
@@ -379,7 +397,7 @@ def select_quizzes_by_course_criteria(
         .limit(limit)
     )
 
-    quizzes_raw = db.exec(statement).all()
+    quizzes_raw = db.exec(quizzes_statement).all()
     # Ensure only Quiz objects are returned
     quizzes: list[Quiz] = [r[0] if isinstance(r, tuple) else r for r in quizzes_raw]
     return quizzes
