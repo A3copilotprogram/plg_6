@@ -297,6 +297,14 @@ export type DocumentPublic = {
      */
     created_at: string;
     status: DocumentStatus;
+    /**
+     * Filename
+     */
+    filename: string;
+    /**
+     * Title
+     */
+    title: string;
 };
 
 /**

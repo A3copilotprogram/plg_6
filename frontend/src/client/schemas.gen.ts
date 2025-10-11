@@ -453,10 +453,18 @@ export const DocumentPublicSchema = {
         },
         status: {
             '$ref': '#/components/schemas/DocumentStatus'
+        },
+        filename: {
+            type: 'string',
+            title: 'Filename'
+        },
+        title: {
+            type: 'string',
+            title: 'Title'
         }
     },
     type: 'object',
-    required: ['id', 'course_id', 'updated_at', 'created_at', 'status'],
+    required: ['id', 'course_id', 'updated_at', 'created_at', 'status', 'filename', 'title'],
     title: 'DocumentPublic'
 } as const;
 

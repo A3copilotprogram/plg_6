@@ -95,7 +95,9 @@ export const zDocumentPublic = z.object({
     course_id: z.uuid(),
     updated_at: z.iso.datetime(),
     created_at: z.iso.datetime(),
-    status: zDocumentStatus
+    status: zDocumentStatus,
+    filename: z.string(),
+    title: z.string()
 });
 
 /**

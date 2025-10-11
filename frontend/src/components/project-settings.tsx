@@ -156,7 +156,7 @@ export default function ProjectSettings() {
                         <FileText className='h-5 w-5 text-muted-foreground' />
                         <div>
                           <div className='text-sm font-medium text-foreground mb-2'>
-                            {doc.filename}
+                            {doc.title}
                           </div>
                           <div className='text-xs text-muted-foreground'>
                             Updated on {format(doc.updated_at, 'hh:mm a, dd MMM yy')}

@@ -86,29 +86,6 @@ async def embed_chunks(chunks: list[str]) -> list[list[float]]:
         raise HTTPException(status_code=500, detail=f"Embedding generation failed: {e}")
 
 
-def store_embeddings(
-    chunks: list[str],
-    embeddings: list[list[float]],
-    course_id: str,
-    document_id: str,
-    index,
-):
-    vectors = [
-        {
-            "id": str(uuid.uuid4()),
-            "values": embedding,
-            "metadata": {
-                "course_id": course_id,
-                "document_id": document_id,
-                "text": chunk,
-                "chunk_index": i,
-            },
-        }
-        for i, (chunk, embedding) in enumerate(zip(chunks, embeddings, strict=False))
-    ]
-    index.upsert(vectors)
-
-
 async def process_pdf_task(
     file_path: str, document_id: uuid.UUID, course_id: uuid.UUID, session: SessionDep
 ):
@@ -199,39 +176,6 @@ async def process_pdf_task(
         os.remove(file_path)
 
 
-# async def handle_document_processing(
-#     file: UploadFile, document_id: uuid.UUID, session: SessionDep
-# ):
-#     """
-#     Background task to handle all blocking I/O:
-#     saving the file and then calling the main processing task.
-#     """
-#     tmp_dir = tempfile.mkdtemp()
-#     tmp_path = os.path.join(tmp_dir, f"{document_id}_{file.filename}")
-
-#     try:
-#         with open(tmp_path, "wb") as buffer:
-#             while True:
-#                 chunk = await file.read(1024)  # Read in 1KB chunks
-#                 if not chunk:
-#                     break
-#                 buffer.write(chunk)
-#         # process_pdf_task, tmp_path, db_document.id, db_document.course_id, session
-
-#         await process_pdf_task(tmp_path, document_id, session)
-
-#     except Exception as e:
-#         logger.error(f"[handle_document_processing] Error processing document: {e}")
-#         document = session.get(Document, document_id)
-#         if document:
-#             document.status = DocumentStatus.FAILED
-#             session.add(document)
-#             session.commit()
-
-#     finally:
-#         shutil.rmtree(tmp_dir)
-
-
 @router.post("/process")
 async def process_multiple_documents(
     session: SessionDep,
@@ -267,7 +211,7 @@ async def process_multiple_documents(
         title_without_extension = os.path.splitext(filename_str)[0]
 
         db_document = Document(
-            title=title_without_extension,
+            title=(title_without_extension or "").capitalize(),
             filename=filename_str,
             course_id=course_id,
         )

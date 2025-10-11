@@ -41,6 +41,8 @@ class DocumentPublic(PydanticBase):
     updated_at: datetime
     created_at: datetime
     status: DocumentStatus
+    filename: str
+    title: str
 
 
 class CoursePublic(PydanticBase):
@@ -203,6 +205,7 @@ class ChatPublic(PydanticBase):
     is_system: bool
     created_at: datetime
     updated_at: datetime
+
 
 class ChatMessage(BaseModel):
     message: str

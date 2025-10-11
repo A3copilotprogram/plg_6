@@ -24,6 +24,7 @@ async def get_quiz_prompt(prompt: str) -> ChatCompletion:
                                     "distraction_1": {"type": "string"},
                                     "distraction_2": {"type": "string"},
                                     "distraction_3": {"type": "string"},
+                                    "feedback": {"type": "string"},
                                     "topic": {"type": "string"},
                                 },
                                 "required": [
@@ -32,6 +33,7 @@ async def get_quiz_prompt(prompt: str) -> ChatCompletion:
                                     "distraction_1",
                                     "distraction_2",
                                     "distraction_3",
+                                    "feedback",
                                     "topic",
                                 ],
                                 "additionalProperties": False,
