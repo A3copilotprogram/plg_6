@@ -122,6 +122,7 @@ async def process_pdf_task(
                 document_id=document_id,
                 text_content=chunk,
                 embedding_id=uuid.uuid4().hex,
+                course_id=course_id,
             )
             session.add(chunk_record)
             chunk_records.append(chunk_record)
@@ -165,7 +166,7 @@ async def process_pdf_task(
         session.add(document)
         session.commit()
 
-        await generate_quizzes_task(document_id, session)
+        await generate_quizzes_task(document_id, course_id, session)
 
     except Exception as e:
         logger.error(f"[process_pdf_task] Error processing document: {e}")

@@ -75,8 +75,9 @@ def read_courses(
     total_count = session.exec(count_statement).one()
     course_statement = course_statement.offset(skip).limit(limit)
     courses: Sequence[Course] = session.exec(course_statement).all()
+    courses_public = [CoursePublic.model_validate(course) for course in courses]
 
-    return CoursesPublic(data=courses, count=total_count)
+    return CoursesPublic(data=courses_public, count=total_count)
 
 
 @router.post("/", response_model=Course)
@@ -174,7 +175,7 @@ def delete_course(
 @router.get("/{id}/documents", response_model=list[dict[str, Any]])
 async def list_documents(
     id: str, session: SessionDep, skip: int = 0, limit: int = 100
-) -> list[dict[str, Any]]:
+) -> list[dict[str, Any]]:  # type: ignore
     """
     List documents for a specific course.
     """

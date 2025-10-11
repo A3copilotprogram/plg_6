@@ -50,7 +50,7 @@ class CoursePublic(PydanticBase):
     owner_id: uuid.UUID
     name: str
     description: str | None = None
-    documents: list[DocumentPublic]
+    documents: Sequence[DocumentPublic]
     created_at: datetime
     updated_at: datetime
 

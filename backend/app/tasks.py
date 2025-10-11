@@ -39,9 +39,11 @@ def get_token_count(text: str) -> int:
     return len(ENCODER.encode(text))
 
 
-async def generate_quizzes_task(document_id: uuid.UUID, session: SessionDep):
+async def generate_quizzes_task(
+    document_id: uuid.UUID, course_id: uuid.UUID, session: SessionDep
+):
     try:
-        statement = select(Chunk).where(Chunk.document_id == document_id)
+        statement = select(Chunk).where(Chunk.course_id == course_id)
         all_chunks = session.exec(statement).all()
 
         if not all_chunks:
@@ -56,19 +58,16 @@ async def generate_quizzes_task(document_id: uuid.UUID, session: SessionDep):
             DifficultyLevel.MEDIUM,
             DifficultyLevel.HARD,
         ]:
-            # --- DYNAMIC BATCHING LOGIC ---
             while unprocessed_chunks:
                 current_batch_chunks = []
                 batch_text_content = ""
                 current_token_count = 0
 
-                # Build the batch until the MAX_PROMPT_TOKENS limit is hit
                 i = 0
                 while i < len(unprocessed_chunks):
                     chunk = unprocessed_chunks[i]
                     chunk_token_count = get_token_count(chunk.text_content)
 
-                    # Check if adding the next chunk exceeds the limit
                     if current_token_count + chunk_token_count < MAX_PROMPT_TOKENS:
                         current_token_count += chunk_token_count
                         batch_text_content += chunk.text_content + "\n\n"
@@ -93,7 +92,6 @@ async def generate_quizzes_task(document_id: uuid.UUID, session: SessionDep):
 
                 response = await get_quiz_prompt(prompt)
 
-                # Process response and link quizzes to the chunks in the batch
                 try:
                     raw_content = response.choices[0].message.content
                     parsed = json.loads(raw_content)
@@ -120,22 +118,22 @@ async def generate_quizzes_task(document_id: uuid.UUID, session: SessionDep):
 
                     new_quiz = Quiz(
                         chunk_id=current_batch_chunks[0].id,
-                        difficulty_level=difficulty_level,
-                        quiz_text=q_data["quiz"],
                         correct_answer=clean_string(q_data["correct_answer"]),
+                        course_id=course_id,
+                        difficulty_level=difficulty_level,
                         distraction_1=clean_string(q_data["distraction_1"]),
                         distraction_2=clean_string(q_data["distraction_2"]),
                         distraction_3=clean_string(q_data["distraction_3"]),
+                        document_id=document_id,
                         feedback=clean_string(q_data["feedback"]),
+                        quiz_text=q_data["quiz"],
                         topic=clean_string(q_data["topic"]),
                     )
                     session.add(new_quiz)
 
                 session.commit()
-                # 5. Throttle: Since we're sending a large request, a pause is critical
-                await asyncio.sleep(13)
+                await asyncio.sleep(15)
 
-            # Reset unprocessed_chunks for the next difficulty level
             unprocessed_chunks = list(all_chunks)
 
     except Exception as e:
