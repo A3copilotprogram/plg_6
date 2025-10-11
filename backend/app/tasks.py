@@ -12,7 +12,6 @@ from sqlmodel import Session, select
 
 from app.api.deps import CurrentUser, SessionDep
 from app.models.course import Course
-from app.models.document import Document
 from app.models.embeddings import Chunk
 from app.models.quizzes import Quiz, QuizAttempt, QuizSession
 from app.prompts.quizzes import get_quiz_prompt, get_quizzes_generation_prompt
