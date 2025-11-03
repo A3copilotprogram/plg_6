@@ -130,7 +130,7 @@ async def process_pdf_task(
         logger.info(f"Chunks length {len(chunks)}")
         embeddings = []
         BATCH_SIZE = 50
-        for i in range(0, len(chunks), len(chunks)):
+        for i in range(0, len(chunks), BATCH_SIZE):
             batch = chunks[i : i + BATCH_SIZE]
             embeddings.extend(await embed_chunks(batch))
             await asyncio.sleep(0)
