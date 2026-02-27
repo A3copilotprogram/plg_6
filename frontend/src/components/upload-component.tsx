@@ -1,12 +1,13 @@
 'use client'
 
-import {useState} from 'react'
-import {Cloud} from 'react-feather'
-import {useDropzone} from 'react-dropzone'
-import {toast} from 'sonner'
+import { useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { Cloud } from 'react-feather'
+import { toast } from 'sonner'
 
-import {Button} from '@/components/ui/button'
-import {uploadDocuments} from '@/lib/documents'
+import { Button } from '@/components/ui/button'
+import { uploadDocuments } from '@/lib/documents'
+import ProgressBar from './progress-bar'
 
 const ACCEPTED_FILE_TYPES = {
   'application/pdf': ['.pdf'],
@@ -22,12 +23,35 @@ export default function UploadComponent({
   callback?: () => void
 }) {
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0);
+  
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
     accept: ACCEPTED_FILE_TYPES,
     maxSize: MAX_FILE_SIZE,
     onDrop: async (documents) => {
       setIsUploading(true)
-      await uploadDocuments(courseId, documents)
+      await uploadDocuments(courseId, documents, (progressEvent) => {
+        if (progressEvent.total) {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total,
+          );
+          setUploadProgress(percentCompleted);
+        }
+      })
+      .then((result) => {
+        if (result.ok) {
+          toast.success('Files uploaded successfully')
+        } else {
+          toast.error(result.error?.message || 'Failed to upload files')
+        }
+      })
+      .catch(() => {
+        toast.error('Failed to upload files')
+      })
+      .finally(async () => {
+        setUploadProgress(0); // Reset progress after upload completes
+        setIsUploading(false)
+      })
       if (callback) {
         await callback()
       }
@@ -69,7 +93,12 @@ export default function UploadComponent({
     >
       <input {...getInputProps()} />
       <Cloud className='mx-auto h-12 w-12 text-muted-foreground mb-4' />
-      <div className='space-y-2'>
+     {isUploading ? (
+          <div className='space-y-2'>
+            <p>Uploading...</p>
+            <ProgressBar progress={uploadProgress} />
+          </div>
+        ) :  (<div className='space-y-2'>
         <p className='text-lg font-medium'>
           {isDragActive ? 'Drop files here' : 'Drag and drop files here'}
         </p>
@@ -87,7 +116,7 @@ export default function UploadComponent({
         >
           {isUploading ? 'Uploading...' : 'Browse Files'}
         </Button>
-      </div>
+      </div>)}
     </div>
   )
 }
